@@ -6,11 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.quanlysinhvien.Model.KetQuaHocTap;
 import com.example.quanlysinhvien.Model.LopHocPhan;
 import com.example.quanlysinhvien.Model.Nhanvien;
-import com.example.quanlysinhvien.Model.SinhVien;
+
 import com.example.quanlysinhvien.repository.KetQuaHocTapRepository;
 import com.example.quanlysinhvien.repository.LopHocPhanRepository;
 import com.example.quanlysinhvien.repository.NhanvienRepository;
-import com.example.quanlysinhvien.repository.SinhVienRepository;
 
 import java.util.List;
 

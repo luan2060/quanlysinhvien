@@ -62,7 +62,7 @@ public class SinhVienController {
         model.addAttribute("hocKyChon", hocKy);
         model.addAttribute("namHocChon", namHoc);
 
-        return "sinhvien/Diem";
+        return "Sinhvien/Diem";
     }
 
     @GetMapping("/taichinh")
@@ -106,6 +106,6 @@ public class SinhVienController {
         model.addAttribute("namHocChon", nh);
         model.addAttribute("sinhVien", sv);
 
-        return "sinhvien/taichinh";
+        return "Sinhvien/taichinh";
     }
 }
