@@ -16,42 +16,46 @@ import java.util.Collections;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final SinhVienRepository sinhVienRepository;
-    private final NhanvienRepository nhanvienRepository;
+        private final SinhVienRepository sinhVienRepository;
+        private final NhanvienRepository nhanvienRepository;
 
-    public UserDetailsServiceImpl(SinhVienRepository sinhVienRepository,
-            NhanvienRepository nhanvienRepository) {
-        this.sinhVienRepository = sinhVienRepository;
-        this.nhanvienRepository = nhanvienRepository;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        // Xác định role dựa theo email
-        if (email.contains("student")) {
-            SinhVien sv = sinhVienRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy: " + email));
-            return new User(
-                    sv.getEmail(),
-                    sv.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_SINHVIEN")));
-        } else if (email.contains("teacher")) {
-            Nhanvien nv = nhanvienRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy: " + email));
-            return new User(
-                    nv.getEmail(),
-                    nv.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_GIANGVIEN")));
-        } else if (email.contains("admin")) {
-            Nhanvien nv = nhanvienRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy: " + email));
-            return new User(
-                    nv.getEmail(),
-                    nv.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        public UserDetailsServiceImpl(SinhVienRepository sinhVienRepository,
+                        NhanvienRepository nhanvienRepository) {
+                this.sinhVienRepository = sinhVienRepository;
+                this.nhanvienRepository = nhanvienRepository;
         }
 
-        throw new UsernameNotFoundException("Email không hợp lệ: " + email);
-    }
+        @Override
+        public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+                String lowerEmail = email.toLowerCase(); // Tránh lỗi chữ hoa/thường
+
+                // TRƯỜNG HỢP 1: Email chứa "admin" -> Gán ROLE_ADMIN
+                if (lowerEmail.contains("admin")) {
+                        Nhanvien nv = nhanvienRepository.findByEmail(email)
+                                        .orElseThrow(() -> new UsernameNotFoundException(
+                                                        "Không tìm thấy Admin: " + email));
+                        return new User(nv.getEmail(), nv.getPassword(),
+                                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                }
+
+                // TRƯỜNG HỢP 2: Email chứa "teacher" -> Gán ROLE_GIANGVIEN
+                if (lowerEmail.contains("teacher")) {
+                        Nhanvien nv = nhanvienRepository.findByEmail(email)
+                                        .orElseThrow(() -> new UsernameNotFoundException(
+                                                        "Không tìm thấy Giảng viên: " + email));
+                        return new User(nv.getEmail(), nv.getPassword(),
+                                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_GIANGVIEN")));
+                }
+
+                // TRƯỜNG HỢP 3: Email chứa "student" -> Tìm trong bảng SinhVien
+                if (lowerEmail.contains("student")) {
+                        SinhVien sv = sinhVienRepository.findByEmail(email)
+                                        .orElseThrow(() -> new UsernameNotFoundException(
+                                                        "Không tìm thấy Sinh viên: " + email));
+                        return new User(sv.getEmail(), sv.getPassword(),
+                                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_SINHVIEN")));
+                }
+
+                throw new UsernameNotFoundException("Email không hợp lệ: " + email);
+        }
 }
