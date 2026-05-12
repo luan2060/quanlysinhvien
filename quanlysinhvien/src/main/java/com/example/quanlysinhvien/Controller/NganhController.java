@@ -40,7 +40,7 @@ public class NganhController {
         model.addAttribute("tongNganh", nganhService.findAll().size());
         model.addAttribute("nganhHoatDong", nganhService.countHoatDong());
         model.addAttribute("nganhTamDung", nganhService.countTamDung());
-        return "admin/nganh"; // ✅ sửa lại đúng path template
+        return "admin/Nganh"; // ✅ sửa lại đúng path template
     }
 
     // ===================== CREATE =====================
