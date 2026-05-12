@@ -1,0 +1,63 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+<body>
+
+<div class="bodier" style="display: flex;"> 
+    <div class="header" style="width: 15%;">
+        <div  th:replace="~{layout/header :: header('student')}"></div> 
+    </div>  
+ 
+ <div class="container" style="width: 85%;">
+    <div class="maxbox1" style="display: flex; gap:2% ;">
+    <div class="box1" 
+    style=" box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); width: 23%; height:100px ; border-radius: 10px; margin: 10px;">
+        <h6>Tổng sinh viên</h6>
+    </div>
+      <div class="box2" style=" box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); width: 23%; height:100px ; border-radius: 10px; margin: 10px;"
+     >
+        <h6>Tổng Giảng Viên</h6>
+    </div>
+      <div class="box3" style=" box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); width: 23%; height:100px ; border-radius: 10px; margin: 10px;">
+        <h6>Số khoa</h6>
+    </div>
+      <div class="box4" style=" box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); width: 23%; height:100px ; border-radius: 10px; margin: 10px;">
+        <h6>Tỷ lệ tốt nghiệp</h6>
+    </div>
+</div>
+    <div class="maxbox2" style="box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); border-radius: 10px;margin-top: 20px ;">
+        
+        <table class="table table-bordered table-hover">
+            <h6>Sinh viên mới</h6>
+			<thead>
+				<tr>
+					<th scope="col">Mã sinh viên</th>
+					<th scope="col">Họ và tên</th>
+					<th scope="col">Lớp</th>
+					<th scope="col">Khoa</th>
+					<th scope="col">Trạng thái</th>
+					
+				</tr>
+			</thead>
+			<tbody>
+				
+				<tr th:each="user, status : ${users}">
+					<th th:text="${user.id}"></th>
+					<td th:text="${user.name}"/>
+					<td th:text="${user.email}"/>
+					<td th:text="${user.address}"/>
+					<td th:text="${user.role}"/>
+				</tr>
+				
+			</tbody>
+		</table>
+    </div>
+ </div>
+</div>
+</body>
+</html> -->

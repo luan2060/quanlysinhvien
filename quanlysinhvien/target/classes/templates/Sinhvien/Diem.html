@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả học tập</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg"
+         style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/sidebar :: sidebar('ketqua')}"></div>
+    </div>
+
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+
+            <!-- TIÊU ĐỀ -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2"
+                 style="border-color: #00509e !important;">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1">Kết quả học tập</h2>
+                    <p class="text-muted mb-0 small">Bảng điểm chi tiết theo học kỳ và tích lũy</p>
+                </div>
+                <button type="button"
+                        class="btn shadow-sm d-flex align-items-center px-4 py-2 rounded-3 text-white fw-medium"
+                        style="background-color: #00509e;">
+                    <i class="fas fa-file-download me-2"></i> Tải bảng điểm
+                </button>
+            </div>
+
+            <!-- THỐNG KÊ TỔNG QUAN -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-3"
+                         style="border-bottom: 5px solid #00509e !important;">
+                        <div class="card-body text-center">
+                            <div class="text-muted small fw-medium text-uppercase mb-2">GPA (Hệ 4.0)</div>
+                            <h2 class="display-5 fw-bold mb-0" style="color: #00509e;" th:text="${gpa}">0.00</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-3"
+                         style="border-bottom: 5px solid #00509e !important;">
+                        <div class="card-body text-center">
+                            <div class="text-muted small fw-medium text-uppercase mb-2">Trung bình (Hệ 10)</div>
+                            <h2 class="display-5 fw-bold mb-0" style="color: #00509e;" th:text="${tb10}">0.00</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-3"
+                         style="border-bottom: 5px solid #198754 !important;">
+                        <div class="card-body text-center">
+                            <div class="text-muted small fw-medium text-uppercase mb-2">Tín chỉ tích lũy</div>
+                            <h2 class="display-5 fw-bold text-success mb-0" th:text="${tinChiTichLuy}">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-3"
+                         style="border-bottom: 5px solid #ffc107 !important;">
+                        <div class="card-body text-center">
+                            <div class="text-muted small fw-medium text-uppercase mb-2">Xếp loại học lực</div>
+                            <h2 class="display-5 fw-bold text-warning mb-0" th:text="${xepLoai}">-</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BỘ LỌC HỌC KỲ -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-3 mb-md-0 d-flex align-items-center" style="color: #00509e;">
+                        <i class="fas fa-list-alt me-2"></i> Chi tiết điểm các học phần
+                    </h5>
+                    <form method="get" th:action="@{/sinhvien/diem}" class="d-flex align-items-center">
+                        <label class="text-muted small fw-medium me-3 text-nowrap">Chọn học kỳ:</label>
+                        <select class="form-select border-secondary border-opacity-25 shadow-none"
+                                style="min-width: 200px;" name="hocKy" onchange="this.form.submit()">
+                            <option value="">Tất cả các học kỳ</option>
+                            <option value="1" th:selected="${hocKyChon == 1}">Học kỳ 1 (2025-2026)</option>
+                            <option value="2" th:selected="${hocKyChon == 2}">Học kỳ 2 (2025-2026)</option>
+                        </select>
+                        <input type="hidden" name="namHoc" value="2025-2026">
+                    </form>
+                </div>
+            </div>
+
+            <!-- BẢNG ĐIỂM -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 text-center">
+                        <thead style="background-color: #00509e; color: #ffffff;">
+                            <tr>
+                                <th class="py-3 px-4 fw-medium text-start">Môn học / Lớp HP</th>
+                                <th class="py-3 fw-medium">TC</th>
+                                <th class="py-3 fw-medium">Chuyên cần</th>
+                                <th class="py-3 fw-medium">Giữa kỳ</th>
+                                <th class="py-3 fw-medium">Cuối kỳ</th>
+                                <th class="py-3 fw-medium">Tổng kết</th>
+                                <th class="py-3 fw-medium">Điểm chữ</th>
+                                <th class="py-3 px-4 fw-medium text-end">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white border-top-0">
+                            <tr th:each="kq : ${danhSachKetQua}"
+                                th:style="${kq.trangThaiQuaMon != null and !kq.trangThaiQuaMon} ? 'background-color: #fff5f5;' : ''">
+
+                                <td class="px-4 text-start">
+                                    <div class="fw-bold"
+                                         th:classappend="${kq.trangThaiQuaMon != null and !kq.trangThaiQuaMon} ? 'text-danger' : 'text-dark'"
+                                         th:text="${kq.lopHocPhan.hocPhan.tenHocPhan}">Tên môn</div>
+                                    <div class="text-muted small" th:text="${kq.lopHocPhan.maLopHP}">LHP_XX</div>
+                                </td>
+
+                                <td th:text="${kq.lopHocPhan.hocPhan.soTinChi}">3</td>
+
+                                <td th:text="${kq.diemChuyenCan != null} ? ${#numbers.formatDecimal(kq.diemChuyenCan, 1, 1)} : '-'">-</td>
+                                <td th:text="${kq.diemGiuaKy != null} ? ${#numbers.formatDecimal(kq.diemGiuaKy, 1, 1)} : '-'">-</td>
+                                <td th:text="${kq.diemCuoiKy != null} ? ${#numbers.formatDecimal(kq.diemCuoiKy, 1, 1)} : '-'">-</td>
+
+                                <td class="fw-bold fs-6"
+                                    th:classappend="${kq.trangThaiQuaMon != null and !kq.trangThaiQuaMon} ? 'text-danger' : 'text-dark'"
+                                    th:text="${kq.diemTongKet != null} ? ${#numbers.formatDecimal(kq.diemTongKet, 1, 1)} : '-'">-</td>
+
+                                <td>
+                                    <span class="fw-bold fs-5"
+                                          th:text="${kq.diemChu != null} ? ${kq.diemChu} : '-'"
+                                          th:classappend="${kq.trangThaiQuaMon != null and !kq.trangThaiQuaMon} ? 'text-danger' :
+                                                          (${kq.diemChu == 'A'} ? 'text-success' : '')">-</span>
+                                </td>
+
+                                <td class="px-4 text-end">
+                                    <span th:if="${kq.trangThaiQuaMon != null and kq.trangThaiQuaMon}"
+                                          class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
+                                        <i class="fas fa-check-circle me-1"></i> Qua môn
+                                    </span>
+                                    <span th:if="${kq.trangThaiQuaMon != null and !kq.trangThaiQuaMon}"
+                                          class="badge bg-danger bg-opacity-10 text-danger border border-danger px-3 py-2 rounded-pill">
+                                        <i class="fas fa-times-circle me-1"></i> Học lại
+                                    </span>
+                                    <span th:if="${kq.trangThaiQuaMon == null}"
+                                          class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-50 px-3 py-2 rounded-pill">
+                                        <i class="fas fa-spinner fa-spin me-1"></i> Đang học
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <!-- Trường hợp không có dữ liệu -->
+                            <tr th:if="${#lists.isEmpty(danhSachKetQua)}">
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox me-2"></i> Không có dữ liệu
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

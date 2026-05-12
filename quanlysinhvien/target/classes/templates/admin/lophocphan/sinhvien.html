@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Sinh Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style> body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">
+                        Danh sách Sinh Viên - 
+                        <span class="text-primary" th:text="${lophp.tenLopHP}"></span>
+                    </h4>
+                    <p class="text-muted small mb-0">
+                        Mã lớp: <strong th:text="${lophp.maLopHP}"></strong> | 
+                        HK <span th:text="${lophp.hocKy != null ? lophp.hocKy : '?'}"></span> - 
+                        <span th:text="${lophp.namHoc != null ? lophp.namHoc : '?'}"></span> |
+                        GV: <span th:text="${lophp.giangVien != null ? lophp.giangVien.tenNV : 'Chưa xếp'}"></span>
+                    </p>
+                </div>
+                <a th:href="@{/admin/hocphan}" class="btn btn-light border shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+
+            <!-- Bảng danh sách -->
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-white border-0 py-3 mt-2">
+                    <h5 class="fw-bold mb-0 ps-2">
+                        Danh sách sinh viên đăng ký
+                        <span class="badge bg-primary ms-2" 
+                              th:text="${danhSachKetQua != null ? #lists.size(danhSachKetQua) : 0} + ' sinh viên'">
+                        </span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="ps-4 py-3">MÃ SV</th>
+                                    <th class="py-3">HỌ TÊN</th>
+                                    <th class="py-3 text-center">CC</th>
+                                    <th class="py-3 text-center">GK</th>
+                                    <th class="py-3 text-center">CK</th>
+                                    <th class="py-3 text-center">TỔNG KẾT</th>
+                                    <th class="py-3 text-center">ĐIỂM CHỮ</th>
+                                    <th class="py-3 text-center">KẾT QUẢ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:if="${danhSachKetQua != null and !#lists.isEmpty(danhSachKetQua)}">
+                                    <tr th:each="kq : ${danhSachKetQua}">
+                                        <td class="ps-4 fw-bold text-dark" th:text="${kq.sinhVien.maSV}"></td>
+                                        <td th:text="${kq.sinhVien.hoTen}"></td>
+                                        <td class="text-center" th:text="${kq.diemChuyenCan != null ? kq.diemChuyenCan : '-'}"></td>
+                                        <td class="text-center" th:text="${kq.diemGiuaKy != null ? kq.diemGiuaKy : '-'}"></td>
+                                        <td class="text-center" th:text="${kq.diemCuoiKy != null ? kq.diemCuoiKy : '-'}"></td>
+                                        <td class="text-center fw-bold" th:text="${kq.diemTongKet != null ? kq.diemTongKet : '-'}"></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-light text-dark border" 
+                                                  th:text="${kq.diemChu != null ? kq.diemChu : '-'}">
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span th:if="${kq.trangThaiQuaMon == true}" 
+                                                  class="badge rounded-pill bg-success-subtle text-success px-3">Qua môn</span>
+                                            <span th:if="${kq.trangThaiQuaMon == false}" 
+                                                  class="badge rounded-pill bg-danger-subtle text-danger px-3">Trượt</span>
+                                            <span th:if="${kq.trangThaiQuaMon == null}" 
+                                                  class="badge rounded-pill bg-secondary-subtle text-secondary px-3">Chưa có</span>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                                <tr th:if="${danhSachKetQua == null or #lists.isEmpty(danhSachKetQua)}">
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-folder-open d-block fs-2 mb-2 text-secondary"></i>
+                                        Chưa có sinh viên đăng ký lớp học phần này
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

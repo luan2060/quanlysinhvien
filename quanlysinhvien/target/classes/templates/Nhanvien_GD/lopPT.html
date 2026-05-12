@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lớp Phụ Trách - Giảng Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+<!-- Sidebar -->
+<div class="position-fixed top-0 start-0 vh-100 shadow"
+     style="width: 260px; z-index: 1030; background-color: #1a252f;">
+    <div th:replace="~{layout/sidebarNV :: sidebarNV('lopphutrach')}"></div> 
+</div>
+
+<!-- Main Content -->
+<div style="margin-left: 260px; min-height: 100vh;">
+    <div class="container-fluid p-4">
+
+        <!-- Tiêu đề -->
+        <div class="mb-4 pb-2 border-bottom border-secondary-subtle">
+            <h3 class="fw-bold text-dark mb-0">
+                <i class="fas fa-chalkboard-teacher text-primary me-2"></i>Lớp học phụ trách
+            </h3>
+        </div>
+
+        <!-- Thông báo -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- DANH SÁCH LỚP HỌC -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6 col-xl-4" th:each="lop : ${danhSachLop}">
+                <a th:href="@{/nhanvien/loppt(idLop=${lop.id})}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm border-0 border-top border-4"
+                         th:classappend="${lopDaChon != null and lopDaChon.id == lop.id}
+                                         ? 'border-primary bg-primary-subtle'
+                                         : 'border-secondary'">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-primary mb-1" th:text="${lop.tenLopHP}">Lập trình Web</h5>
+                            <p class="text-muted small fw-semibold mb-3">
+                                Mã lớp: <span th:text="${lop.maLopHP}">IT101</span>
+                            </p>
+                            <div class="d-flex justify-content-between text-dark small fw-medium">
+                              
+<span>
+    <i class="fas fa-door-open text-secondary me-1"></i>
+    P.Học: <span th:text="${lop.phongHoc}">P.302</span>
+</span>
+                             
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH SINH VIÊN & NHẬP ĐIỂM -->
+        <div class="card shadow border-0 mt-4" th:if="${lopDaChon != null}">
+
+            <div class="card-header bg-white p-3 d-flex justify-content-between align-items-center border-bottom border-primary border-2">
+                <h5 class="mb-0 fw-bold">
+                    Danh sách lớp:
+                    <span class="text-primary" th:text="${lopDaChon.tenLopHP}">Lập trình Web</span>
+                </h5>
+                <span class="badge bg-warning text-dark px-3 py-2 border rounded-pill shadow-sm">
+                    <i class="fas fa-shield-alt me-1"></i> Bấm "Thêm điểm" để mở khóa nhập liệu
+                </span>
+            </div>
+
+            <div class="card-body p-0">
+                <form th:action="@{/nhanvien/luudiem}" method="post">
+
+                    <input type="hidden" name="idLopHP" th:value="${lopDaChon.id}">
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-primary text-center">
+                                <tr>
+                                    <th style="width: 60px;">STT</th>
+                                    <th style="width: 150px;">Mã SV</th>
+                                    <th class="text-start">Họ và Tên</th>
+                                    <th style="width: 15%;">Chuyên cần</th>
+                                    <th style="width: 15%;">Giữa kỳ</th>
+                                    <th style="width: 15%;">Cuối kỳ</th>
+                                    <th style="width: 100px;">Tổng kết</th>
+                                    <th style="width: 80px;">Xếp loại</th>
+                                    <th style="width: 130px;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-center">
+                                <tr th:each="kq, iterStat : ${danhSachKetQua}">
+
+                                    <input type="hidden" name="idSV" th:value="${kq.sinhVien.id}">
+
+                                    <td class="fw-medium" th:text="${iterStat.count}">1</td>
+                                    <td class="text-secondary fw-semibold" th:text="${kq.sinhVien.maSV}">SV001</td>
+                                    <td class="text-start fw-bold text-dark" th:text="${kq.sinhVien.hoTen}">Họ tên</td>
+
+                                    <!-- CHUYÊN CẦN -->
+                                    <td>
+                                        <input th:if="${kq.diemChuyenCan == null}"
+                                               type="number" step="0.1" min="0" max="10"
+                                               name="diemChuyenCan" readonly
+                                               class="form-control form-control-sm text-center mx-auto fw-bold text-primary bg-light grade-input"
+                                               style="width:80px;">
+                                        <th:block th:unless="${kq.diemChuyenCan == null}">
+                                            <span class="badge bg-secondary px-3 py-2"
+                                                  th:text="${kq.diemChuyenCan}">-</span>
+                                            <input type="hidden" name="diemChuyenCan"
+                                                   th:value="${kq.diemChuyenCan}">
+                                        </th:block>
+                                    </td>
+
+                                    <!-- GIỮA KỲ -->
+                                    <td>
+                                        <input th:if="${kq.diemGiuaKy == null}"
+                                               type="number" step="0.1" min="0" max="10"
+                                               name="diemGiuaKy" readonly
+                                               class="form-control form-control-sm text-center mx-auto fw-bold text-primary bg-light grade-input"
+                                               style="width:80px;">
+                                        <th:block th:unless="${kq.diemGiuaKy == null}">
+                                            <span class="badge bg-secondary px-3 py-2"
+                                                  th:text="${kq.diemGiuaKy}">-</span>
+                                            <input type="hidden" name="diemGiuaKy"
+                                                   th:value="${kq.diemGiuaKy}">
+                                        </th:block>
+                                    </td>
+
+                                    <!-- CUỐI KỲ -->
+                                    <td>
+                                        <input th:if="${kq.diemCuoiKy == null}"
+                                               type="number" step="0.1" min="0" max="10"
+                                               name="diemCuoiKy" readonly
+                                               class="form-control form-control-sm text-center mx-auto fw-bold text-primary bg-light grade-input"
+                                               style="width:80px;">
+                                        <th:block th:unless="${kq.diemCuoiKy == null}">
+                                            <span class="badge bg-secondary px-3 py-2"
+                                                  th:text="${kq.diemCuoiKy}">-</span>
+                                            <input type="hidden" name="diemCuoiKy"
+                                                   th:value="${kq.diemCuoiKy}">
+                                        </th:block>
+                                    </td>
+
+                                    <!-- TỔNG KẾT -->
+                                    <td>
+                                        <span th:if="${kq.diemTongKet != null}"
+                                              th:text="${kq.diemTongKet}"
+                                              th:class="${kq.trangThaiQuaMon} ? 'badge bg-success px-3 py-2' : 'badge bg-danger px-3 py-2'">-</span>
+                                        <span th:if="${kq.diemTongKet == null}"
+                                              class="text-muted small">Chưa có</span>
+                                    </td>
+
+                                    <!-- XẾP LOẠI CHỮ -->
+                                    <td>
+                                        <span th:if="${kq.diemChu != null}"
+                                              th:text="${kq.diemChu}"
+                                              th:class="${kq.trangThaiQuaMon} ? 'fw-bold fs-6 text-success' : 'fw-bold fs-6 text-danger'">-</span>
+                                        <span th:if="${kq.diemChu == null}"
+                                              class="text-muted small">-</span>
+                                    </td>
+
+                                    <!-- THAO TÁC -->
+                                    <td>
+                                        <button th:if="${kq.diemChuyenCan == null or kq.diemGiuaKy == null or kq.diemCuoiKy == null}"
+                                                type="button"
+                                                class="btn btn-sm btn-outline-primary fw-bold"
+                                                onclick="moKhoaNhapDiem(this)">
+                                            <i class="fas fa-edit me-1"></i>Thêm điểm
+                                        </button>
+                                        <span th:unless="${kq.diemChuyenCan == null or kq.diemGiuaKy == null or kq.diemCuoiKy == null}"
+                                              class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                                            <i class="fas fa-check me-1"></i>Đã chốt
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Nút Lưu -->
+                    <div class="p-3 bg-light border-top d-flex justify-content-end align-items-center">
+                        <small class="text-muted me-3">Chỉ những sinh viên được "Thêm điểm" mới được lưu trữ.</small>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
+                            <i class="fas fa-save me-2"></i> Lưu Bảng Điểm
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function moKhoaNhapDiem(btn) {
+        const row = btn.closest('tr');
+        const inputs = row.querySelectorAll('.grade-input');
+        inputs.forEach(input => {
+            input.removeAttribute('readonly');
+            input.classList.remove('bg-light');
+            input.classList.add('bg-white');
+        });
+        btn.classList.replace('btn-outline-primary', 'btn-warning');
+        btn.classList.add('text-dark');
+        btn.innerHTML = '<i class="fas fa-unlock me-1"></i>Đang nhập';
+        btn.disabled = true;
+        if (inputs.length > 0) inputs[0].focus();
+    }
+</script>
+
+</body>
+</html>

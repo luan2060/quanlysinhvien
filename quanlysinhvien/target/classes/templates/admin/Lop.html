@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Lớp Hành Chính</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style> body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+    
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+            <!-- Flash message -->
+<div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+    <i class="fa-solid fa-check-circle me-2"></i>
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Quản lý Lớp Hành Chính</h4>
+                    <nav aria-label="breadcrumb">
+                        <p class="text-muted mb-0">Quản lý danh sách lớp học và cố vấn học tập</p>
+                    </nav>
+                </div>
+                <a th:href="@{/admin/lop/create}" class="btn btn-primary shadow-sm" style="border-radius: 8px;">
+                    <i class="fa-solid fa-plus me-2"></i>Thêm Lớp mới
+                </a>
+            </div>
+
+            <!-- Khối Thống kê -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #0d6efd;">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-3">
+                                <i class="fa-solid fa-chalkboard fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-semibold">TỔNG SỐ LỚP</small>
+                                <span class="fw-bold fs-5" th:text="${tongLop}">50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #198754;">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                                <i class="fa-solid fa-users-rays fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-semibold">ĐANG HỌC</small>
+                                <span class="fw-bold fs-5" th:text="${lopDangHoc}">45</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #6c757d;">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary bg-opacity-10 p-3 rounded-3 text-secondary me-3">
+                                <i class="fa-solid fa-graduation-cap fs-4"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block fw-semibold">ĐÃ TỐT NGHIỆP</small>
+                                <span class="fw-bold fs-5" th:text="${lopDaTotNghiep}">5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng danh sách -->
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+             <div class="card-header bg-white border-0 py-3 mt-2">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h5 class="fw-bold mb-0 ps-2">Danh sách lớp chi tiết</h5>
+        </div>
+        <div class="col-md-5">
+            <form th:action="@{/admin/lop}" method="get">
+                <div class="input-group" style="border-radius: 10px; overflow: hidden; background: #f8f9fa;">
+                    <span class="input-group-text bg-transparent border-0 pe-0">
+                        <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                    </span>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           class="form-control bg-transparent border-0 shadow-none"
+                           placeholder="Nhập mã hoặc tên lớp...">
+                    <button class="btn btn-dark px-4" type="submit">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="ps-4 py-3">MÃ LỚP</th>
+                                    <th class="py-3">TÊN LỚP</th>
+                                    <th class="py-3">KHÓA HỌC</th>
+                                    <th class="py-3">THUỘC NGÀNH</th>
+                                    <th class="py-3">CỐ VẤN HỌC TẬP</th>
+                                    <th class="py-3">TRẠNG THÁI</th>
+                                    <th class="text-end pe-4 py-3">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="lop : ${listLop}">
+                                    <td class="ps-4 fw-bold text-dark" th:text="${lop.maLopHc}">ĐH11CNTT1</td>
+                                    <td>
+                                        <div class="fw-medium text-primary" th:text="${lop.tenLopHc}">Đại học CNTT 1</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border px-2" th:text="${lop.khoaHoc}">Khóa 11</span>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark" th:text="${lop.nganh != null ? lop.nganh.tenNganh : 'Chưa cập nhật'}">CNTT</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark"><i class="fa-solid fa-user-tie text-muted me-1"></i> <span th:text="${lop.coVan != null ? lop.coVan.tenNV : 'Chưa phân công'}">Thầy A</span></div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${lop.trangThai == 'Đang học'}" class="badge rounded-pill bg-success-subtle text-success px-3">Đang học</span>
+                                        <span th:if="${lop.trangThai == 'Đã tốt nghiệp'}" class="badge rounded-pill bg-secondary-subtle text-secondary px-3">Đã tốt nghiệp</span>
+                                        <span th:unless="${lop.trangThai == 'Đang học' or lop.trangThai == 'Đã tốt nghiệp'}" class="badge rounded-pill bg-warning-subtle text-warning px-3" th:text="${lop.trangThai}">Khác</span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a th:href="@{/admin/lop/update/{id}(id=${lop.id})}" class="btn btn-sm btn-outline-primary" style="border: none; background: #eef2ff; width: 32px; height: 32px; padding: 0; line-height: 32px; border-radius: 8px;">
+                                                <i class="fa-solid fa-pencil-alt"></i>
+                                            </a>
+                                            <a th:href="@{/admin/lop/delete/{id}(id=${lop.id})}" onclick="return confirm('Bạn có chắc chắn muốn xóa lớp này không?');" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center" style="border: none; background: #fff1f2; width: 32px; height: 32px; padding: 0; line-height: 32px; border-radius: 8px;">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(listLop)}">
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-folder-open d-block fs-2 mb-2 text-secondary"></i>
+                                        Không tìm thấy dữ liệu lớp học
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    const searchInput = document.querySelector('input[name="keyword"]');
+    let timer;
+
+    window.onload = function () {
+        if (searchInput && searchInput.value.length > 0) {
+            searchInput.focus();
+            const len = searchInput.value.length;
+            searchInput.setSelectionRange(len, len);
+        }
+    };
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            this.closest('form').submit();
+        }, 500);
+    });
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
