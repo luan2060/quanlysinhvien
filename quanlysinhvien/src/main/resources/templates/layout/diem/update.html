@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điểm Chi Tiết</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style> 
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } 
+        /* Hiệu ứng khi dòng đang được sửa điểm */
+        .editing-row { background-color: #fff3cd !important; transition: 0.3s; }
+        .val-input { width: 70px; text-align: center; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+    
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Bảng Điểm Chi Tiết</h4>
+                    <p class="text-muted small mb-0">Học phần: <strong th:text="${lophocphan.hocPhan.tenHocPhan}"></strong> | Lớp: <strong th:text="${lophocphan.tenLopHP}"></strong></p>
+                </div>
+                <a th:href="@{/admin/diem}" class="btn btn-light border shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Quay lại danh sách lớp
+                </a>
+            </div>
+
+            <!-- Bảng Danh Sách & Nhập Điểm -->
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-center">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="ps-4 py-3 text-start">SINH VIÊN</th>
+                                    <th class="py-3">CHUYÊN CẦN</th>
+                                    <th class="py-3">GIỮA KỲ</th>
+                                    <th class="py-3">CUỐI KỲ</th>
+                                    <th class="py-3">TỔNG KẾT</th>
+                                    <th class="py-3">ĐIỂM CHỮ</th>
+                                    <th class="py-3">KẾT QUẢ</th>
+                                    <th class="text-end pe-4 py-3">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Vòng lặp duyệt danh sách điểm (Entity: Diem) -->
+                                <!-- Đặt ID cho từng dòng để JS dễ thao tác -->
+                                <tr th:each="d : ${listDiem}" th:id="'row-' + ${d.id}">
+                                    
+                                    <!-- Cột 1: Thông tin Sinh viên -->
+                                    <td class="ps-4 text-start">
+                                        <div class="fw-bold text-dark" th:text="${d.sinhVien.hoTen}">Trần Thị B</div>
+                                        <small class="text-muted" th:text="${d.sinhVien.maSV}">SV001</small>
+                                    </td>
+                                    
+                                    <!-- Cột 2: Điểm Chuyên Cần -->
+                                    <td>
+                                        <span class="val-display" th:text="${d.diemChuyenCan != null ? d.diemChuyenCan : '-'}">8.0</span>
+                                        <input type="number" step="0.1" min="0" max="10" class="form-control form-control-sm val-input d-none mx-auto" th:id="'input-cc-' + ${d.id}" th:value="${d.diemChuyenCan}">
+                                    </td>
+                                    
+                                    <!-- Cột 3: Điểm Giữa Kỳ -->
+                                    <td>
+                                        <span class="val-display" th:text="${d.diemGiuaKy != null ? d.diemGiuaKy : '-'}">7.5</span>
+                                        <input type="number" step="0.1" min="0" max="10" class="form-control form-control-sm val-input d-none mx-auto" th:id="'input-gk-' + ${d.id}" th:value="${d.diemGiuaKy}">
+                                    </td>
+                                    
+                                    <!-- Cột 4: Điểm Cuối Kỳ -->
+                                    <td>
+                                        <span class="val-display fw-bold text-primary" th:text="${d.diemCuoiKy != null ? d.diemCuoiKy : '-'}">8.0</span>
+                                        <input type="number" step="0.1" min="0" max="10" class="form-control form-control-sm val-input d-none mx-auto border-primary" th:id="'input-ck-' + ${d.id}" th:value="${d.diemCuoiKy}">
+                                    </td>
+                                    
+                                    <!-- Cột 5, 6, 7: Điểm tính toán (Read-only, do Backend tự tính khi lưu) -->
+                                    <td><span class="fw-bold" th:text="${d.diemTongKet != null ? d.diemTongKet : '-'}"></span></td>
+                                    <td><span class="badge bg-dark text-white" th:text="${d.diemChu != null ? d.diemChu : '-'}"></span></td>
+                                    <td>
+                                        <span th:if="${d.trangThaiQuaMon == true}" class="badge bg-success-subtle text-success">Qua môn</span>
+                                        <span th:if="${d.trangThaiQuaMon == false}" class="badge bg-danger-subtle text-danger">Học lại</span>
+                                    </td>
+                                    
+                                    <!-- Cột 8: Thao Tác (Nút Sửa/Lưu) -->
+                                    <td class="text-end pe-4">
+                                        
+                                        <!-- Form ẩn chứa dữ liệu thực sự gửi về Server -->
+                                        <form th:action="@{/admin/diem/update-inline}" method="post" th:id="'form-' + ${d.id}" class="d-none">
+                                            <input type="hidden" name="id" th:value="${d.id}">
+                                            <!-- Lưu ID lớp học phần để lúc save xong redirect về đúng lớp này -->
+                                            <input type="hidden" name="lopHocPhanId" th:value="${lophocphan.id}">
+                                            <!-- Các ô input ẩn sẽ được JS copy dữ liệu vào -->
+                                            <input type="hidden" name="diemChuyenCan" th:id="'form-cc-' + ${d.id}">
+                                            <input type="hidden" name="diemGiuaKy" th:id="'form-gk-' + ${d.id}">
+                                            <input type="hidden" name="diemCuoiKy" th:id="'form-ck-' + ${d.id}">
+                                        </form>
+
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <!-- Nút Bật Chế Độ Sửa -->
+                                            <button type="button" th:id="'btn-edit-' + ${d.id}" th:onclick="'enableEdit(' + ${d.id} + ')'" class="btn btn-sm btn-outline-primary" style="width: 32px; height: 32px; border-radius: 8px;">
+                                                <i class="fa-solid fa-pencil-alt"></i>
+                                            </button>
+                                            
+                                            <!-- Nút Lưu (Bị ẩn mặc định, chỉ hiện khi đang sửa) -->
+                                            <button type="button" th:id="'btn-save-' + ${d.id}" th:onclick="'submitEdit(' + ${d.id} + ')'" class="btn btn-sm btn-success d-none text-white shadow" style="border-radius: 8px; width: 60px;">
+                                                <i class="fa-solid fa-check"></i> Lưu
+                                            </button>
+                                            
+                                            <!-- Nút Xóa điểm/Sinh viên khỏi lớp (Tùy chọn) -->
+                                            <a th:href="@{/admin/diem/delete/{id}(id=${d.id})}" onclick="return confirm('Bạn có chắc chắn muốn xóa bản ghi điểm này?');" class="btn btn-sm btn-outline-danger" style="width: 32px; height: 32px; border-radius: 8px;" th:id="'btn-delete-' + ${d.id}">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </a>
+                                            
+                                            <!-- Nút Hủy Sửa (Bị ẩn mặc định) -->
+                                            <button type="button" th:id="'btn-cancel-' + ${d.id}" th:onclick="'cancelEdit(' + ${d.id} + ')'" class="btn btn-sm btn-light border d-none" style="width: 32px; height: 32px; border-radius: 8px;">
+                                                <i class="fa-solid fa-xmark text-muted"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script xử lý Inline Editing thần thánh -->
+    <script>
+        // 1. Hàm bật chế độ Sửa
+        function enableEdit(id) {
+            let row = document.getElementById('row-' + id);
+            row.classList.add('editing-row'); // Tô màu nền dòng đang sửa
+            
+            // Ẩn chữ hiển thị, Hiện ô nhập liệu
+            row.querySelectorAll('.val-display').forEach(el => el.classList.add('d-none'));
+            row.querySelectorAll('.val-input').forEach(el => el.classList.remove('d-none'));
+            
+            // Đổi nút: Ẩn (Sửa, Xóa) -> Hiện (Lưu, Hủy)
+            document.getElementById('btn-edit-' + id).classList.add('d-none');
+            document.getElementById('btn-delete-' + id).classList.add('d-none');
+            document.getElementById('btn-save-' + id).classList.remove('d-none');
+            document.getElementById('btn-cancel-' + id).classList.remove('d-none');
+        }
+
+        // 2. Hàm Hủy sửa (Khôi phục trạng thái ban đầu)
+        function cancelEdit(id) {
+            let row = document.getElementById('row-' + id);
+            row.classList.remove('editing-row');
+            
+            row.querySelectorAll('.val-display').forEach(el => el.classList.remove('d-none'));
+            row.querySelectorAll('.val-input').forEach(el => el.classList.add('d-none'));
+            
+            document.getElementById('btn-edit-' + id).classList.remove('d-none');
+            document.getElementById('btn-delete-' + id).classList.remove('d-none');
+            document.getElementById('btn-save-' + id).classList.add('d-none');
+            document.getElementById('btn-cancel-' + id).classList.add('d-none');
+        }
+
+        // 3. Hàm Xác nhận Lưu
+        function submitEdit(id) {
+            // Lấy dữ liệu từ các ô input đang hiển thị
+            let valCC = document.getElementById('input-cc-' + id).value;
+            let valGK = document.getElementById('input-gk-' + id).value;
+            let valCK = document.getElementById('input-ck-' + id).value;
+
+            // Đổ dữ liệu vào form ẩn
+            document.getElementById('form-cc-' + id).value = valCC;
+            document.getElementById('form-gk-' + id).value = valGK;
+            document.getElementById('form-ck-' + id).value = valCK;
+
+            // Gửi form đi
+            document.getElementById('form-' + id).submit();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

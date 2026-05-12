@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng quan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Be Vietnam Pro', sans-serif; }
+        body { background-color: #f0f4f8; }
+
+        .hero-section {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 420px;
+        }
+        .hero-img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0,30,80,0.85) 0%, rgba(0,80,158,0.5) 60%, transparent 100%);
+        }
+        .hero-content {
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.5rem 3rem;
+            max-width: 600px;
+        }
+        .badge-school {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            width: fit-content;
+            margin-bottom: 1.2rem;
+        }
+        .hero-title {
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 1rem;
+        }
+        .hero-desc {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-primary-custom {
+            background: #00509e;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary-custom:hover { background: #003f7f; color: #fff; transform: translateY(-1px); }
+        .btn-outline-custom {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
+        }
+        .btn-outline-custom:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+        /* Floating stats trên ảnh */
+        .hero-stats {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            gap: 10px;
+        }
+        .stat-pill {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-align: center;
+            color: #fff;
+        }
+        .stat-pill .num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1;
+            display: block;
+        }
+        .stat-pill .label {
+            font-size: 10px;
+            opacity: 0.75;
+            margin-top: 3px;
+            display: block;
+        }
+
+        /* Info cards */
+        .info-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: 100%;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,80,158,0.1);
+        }
+        .info-card .icon-wrap {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 18px;
+        }
+        .info-card h6 { font-size: 13px; color: #888; font-weight: 500; margin-bottom: 4px; }
+        .info-card .value { font-size: 1.5rem; font-weight: 700; color: #1a252f; }
+        .info-card p { font-size: 13px; color: #aaa; margin: 0; }
+
+        /* About section */
+        .about-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .section-tag {
+            display: inline-block;
+            background: #e8f0fb;
+            color: #00509e;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+        .divider-line {
+            width: 40px;
+            height: 3px;
+            background: #00509e;
+            border-radius: 3px;
+            margin: 0.75rem 0 1rem;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #00509e, #003f7f);
+            border-radius: 16px;
+            padding: 2rem;
+            color: #fff;
+            height: 100%;
+        }
+        .highlight-box .big-num {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .highlight-box .sub { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+        .highlight-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        .highlight-item:last-child { border-bottom: none; padding-bottom: 0; }
+    </style>
+</head>
+<body>
+
+<div class="position-fixed top-0 start-0 vh-100 shadow"
+     style="width: 260px; z-index: 1030; background-color: #1a252f;">
+    <div th:replace="~{layout/sidebarNV :: sidebarNV('tongquan')}"></div>
+</div>
+
+<div style="margin-left: 260px;">
+    <div class="container-fluid p-3 p-lg-4">
+
+        <!-- HERO -->
+        <div class="hero-section mb-4 shadow-sm">
+            <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/686213877_1406717884813380_7652641213526115826_n.png?_nc_cat=111&ccb=1-7&_nc_sid=2a1932&_nc_eui2=AeFCNcWPZrJSBCr_bRQwc8z1Zm13KTgbzMhmbXcpOBvMyNfGQ-VWlXA8CkSxtPIhq-evYJcen57YS3fCr3NJCZ1K&_nc_ohc=HPbU5ij-Kz4Q7kNvwFL5E8z&_nc_oc=Adr-fXYHPWmV-7WyTHo5WJAaM5ZbxY9xDaeh98fd-r9ELWWHgfaDqj6hALRyPWlPLL8&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=A3oOkXkklI5YiB9WJLM26Q&_nc_ss=7b2a8&oh=00_Af7cy49yBNzHbWykYnRM6JyL-oaP_glX-phyhjDF1pyOzQ&oe=6A04E22B"
+                 class="hero-img" alt="HUNRE">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="badge-school">
+                    <i class="fas fa-university" style="font-size:11px;"></i>
+                    HUNRE UNIVERSITY
+                </div>
+                <h1 class="hero-title">Đại học Tài nguyên<br>và Môi trường Hà Nội</h1>
+                <p class="hero-desc d-none d-md-block">
+                    Cơ sở đào tạo hàng đầu về tài nguyên, môi trường và công nghệ ứng dụng tại Việt Nam — trực thuộc Bộ Tài nguyên và Môi trường.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn-primary-custom">Khám phá ngay</button>
+                    <button class="btn-outline-custom">Xem thêm</button>
+                </div>
+            </div>
+            <!-- Floating stats -->
+            <div class="hero-stats d-none d-lg-flex">
+                <div class="stat-pill">
+                    <span class="num">1955</span>
+                    <span class="label">Năm thành lập</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="num">20+</span>
+                    <span class="label">Ngành đào tạo</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="num">10K+</span>
+                    <span class="label">Sinh viên</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFO CARDS -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <div class="icon-wrap" style="background:#e8f0fb;">
+                        <i class="fas fa-user-graduate" style="color:#00509e;"></i>
+                    </div>
+                    <h6>Sinh viên</h6>
+                    <div class="value">10,000+</div>
+                    <p>Đang theo học</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <div class="icon-wrap" style="background:#e6f9f0;">
+                        <i class="fas fa-chalkboard-teacher" style="color:#198754;"></i>
+                    </div>
+                    <h6>Giảng viên</h6>
+                    <div class="value">500+</div>
+                    <p>Cán bộ giảng dạy</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <div class="icon-wrap" style="background:#fff8e1;">
+                        <i class="fas fa-book-open" style="color:#f59e0b;"></i>
+                    </div>
+                    <h6>Ngành đào tạo</h6>
+                    <div class="value">20+</div>
+                    <p>Đại học & Sau đại học</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="info-card">
+                    <div class="icon-wrap" style="background:#fce8e8;">
+                        <i class="fas fa-award" style="color:#dc3545;"></i>
+                    </div>
+                    <h6>Năm kinh nghiệm</h6>
+                    <div class="value">70+</div>
+                    <p>Năm đào tạo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT -->
+        <div class="row g-3">
+            <div class="col-12 col-lg-8">
+                <div class="about-card h-100">
+                    <span class="section-tag">GIỚI THIỆU</span>
+                    <h4 class="fw-bold mb-0" style="color:#1a252f;">Về nhà trường</h4>
+                    <div class="divider-line"></div>
+                    <p class="text-secondary lh-lg mb-3" style="font-size:14px;">
+                        Trường Đại học Tài nguyên và Môi trường Hà Nội trực thuộc Bộ Tài nguyên và Môi trường, là cơ sở đào tạo có thế mạnh trong các lĩnh vực như Công nghệ thông tin, Logistics, Quản lý đất đai, Môi trường và Khí tượng thủy văn.
+                    </p>
+                    <p class="text-secondary lh-lg mb-0" style="font-size:14px;">
+                        Với định hướng đào tạo thực tiễn, nhà trường chú trọng phát triển kỹ năng chuyên môn, nghiên cứu khoa học và trải nghiệm thực tế giúp sinh viên dễ dàng thích nghi với môi trường làm việc hiện đại.
+                    </p>
+
+                    <!-- Tags -->
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <span class="badge rounded-pill" style="background:#e8f0fb;color:#00509e;font-weight:500;">Công nghệ thông tin</span>
+                        <span class="badge rounded-pill" style="background:#e8f0fb;color:#00509e;font-weight:500;">Môi trường</span>
+                        <span class="badge rounded-pill" style="background:#e8f0fb;color:#00509e;font-weight:500;">Quản lý đất đai</span>
+                        <span class="badge rounded-pill" style="background:#e8f0fb;color:#00509e;font-weight:500;">Logistics</span>
+                        <span class="badge rounded-pill" style="background:#e8f0fb;color:#00509e;font-weight:500;">Khí tượng thủy văn</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="highlight-box">
+                    <div class="mb-1" style="font-size:11px;opacity:0.6;letter-spacing:1px;font-weight:600;">THÔNG TIN NỔI BẬT</div>
+                    <div class="highlight-item">
+                        <div class="big-num">1955</div>
+                        <div class="sub">Năm thành lập trường</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="big-num">20+</div>
+                        <div class="sub">Ngành đào tạo đại học & sau đại học</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="big-num">10.000+</div>
+                        <div class="sub">Sinh viên đang theo học</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

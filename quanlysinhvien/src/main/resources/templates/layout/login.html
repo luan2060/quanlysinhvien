@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập hệ thống</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-light" style="background-image: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);">
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    
+    <!-- Thẻ Card: Mở rộng form một chút, bo góc lớn hơn và đổ bóng đậm -->
+    <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 420px;">
+        <div class="card-body p-5">
+            
+            <!-- VÙNG CHỨA LOGO -->
+            <div class="text-center mb-4">
+                <a href="#">
+                    <!-- Thẻ img chứa logo, dùng height để cố định chiều cao -->
+                    <img   src="https://student.hunre.edu.vn/congthongtin/logo.png" 
+                         alt="Logo Trường" 
+                         style="height: 150px; object-fit: contain;">
+                </a>
+            </div>
+
+            <h4 class="text-center fw-bold mb-4" style="color: #00509e;">
+                Trường đại học tài nguyên và môi trường Hà Nội
+            </h4>
+
+            <!-- Thông báo lỗi khi sai tài khoản -->
+            <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show text-center small fw-medium rounded-3" role="alert">
+                <i class="fas fa-exclamation-circle me-1"></i> Email hoặc mật khẩu không đúng!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Thông báo sau khi logout -->
+            <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show text-center small fw-medium rounded-3" role="alert">
+                <i class="fas fa-check-circle me-1"></i> Đăng xuất thành công!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- FORM ĐĂNG NHẬP -->
+            <form th:action="@{/login}" method="post">
+                
+                <!-- Sử dụng form-floating của Bootstrap để nhãn trượt lên -->
+                <div class="form-floating mb-3">
+                    <input type="email" 
+                           id="emailInput"
+                           name="username" 
+                           class="form-control fw-medium" 
+                           placeholder="name@example.com"
+                           required>
+                    <label for="emailInput" class="text-muted"><i class="fas fa-envelope me-2"></i>User name</label>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input type="password" 
+                           id="passwordInput"
+                           name="password" 
+                           class="form-control fw-medium" 
+                           placeholder="Mật khẩu"
+                           required>
+                    <label for="passwordInput" class="text-muted"><i class="fas fa-lock me-2"></i>password</label>
+                </div>
+
+                <!-- Ghi nhớ đăng nhập & Quên mật khẩu -->
+                <div class="d-flex justify-content-between align-items-center mb-4 small fw-medium">
+                    <div class="form-check">
+                        <input class="form-check-input shadow-sm" type="checkbox" value="" id="rememberMe">
+                        <label class="form-check-label text-secondary" for="rememberMe">
+                            Ghi nhớ tài khoản
+                        </label>
+                    </div>
+                    <a href="#" class="text-decoration-none" style="color: #00509e;">Quên mật khẩu?</a>
+                </div>
+
+                <!-- Nút Submit -->
+                <button type="submit" class="btn w-100 fw-bold py-2 rounded-3 shadow-sm"
+                        style="background-color: #00509e; color: white; font-size: 1.05rem;">
+                    Đăng nhập <i class="fas fa-sign-in-alt ms-1"></i>
+                </button>
+            </form>
+
+            <!-- Footer (Tùy chọn) -->
+            <div class="text-center mt-4 pt-3 border-top text-muted small">
+                &copy; 2026 Hệ thống Quản lý Đào tạo
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

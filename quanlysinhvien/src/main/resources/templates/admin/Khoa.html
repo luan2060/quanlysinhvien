@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Hiệu ứng cho các card thống kê */
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" 
+         style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+               <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">Quản lý Khoa</h4>
+            <nav aria-label="breadcrumb">
+               <p>Quản lý khoa tại trường</p>
+            </nav>
+        </div>
+        <!-- Thêm th:href cho nút thêm mới -->
+        <a th:href="@{/admin/khoa/create}" class="btn btn-primary shadow-sm" style="border-radius: 8px;">
+            <i class="fa-solid fa-plus me-2"></i>Thêm Khoa Mới
+        </a>
+    </div>
+
+    <!-- 2. Khối Thống kê (4 ô nhỏ) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 stat-card" style="border-left: 4px solid #0d6efd;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-3">
+                        <i class="fa-solid fa-building-columns fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold">TỔNG KHOA</small>
+                        <!-- Sửa text thành th:text -->
+                        <span class="fw-bold fs-5" th:text="${tongkhoa}">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 stat-card" style="border-left: 4px solid #198754;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                        <i class="fa-solid fa-chalkboard-user fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold">TỔNG LỚP</small>
+                        <!-- Sửa text thành th:text -->
+                        <span class="fw-bold fs-5" th:text="${tonglop}">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 stat-card" style="border-left: 4px solid #ffc107;">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-3 text-warning me-3">
+                        <i class="fa-solid fa-user-graduate fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block fw-semibold">SINH VIÊN</small>
+                        <!-- Sửa text thành th:text -->
+                        <span class="fw-bold fs-5" th:text="${tongsinhvien}">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Khu vực bảng và tìm kiếm -->
+    <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-header bg-white border-0 py-3 mt-2">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h5 class="fw-bold mb-0 ps-2">Danh sách sinh viên theo khoa</h5>
+                </div>
+                <div class="col-md-5">
+                   <form id="searchForm" th:action="@{/admin/khoa}" method="get">
+    <div class="input-group" style="border-radius: 10px; overflow: hidden; background: #f8f9fa;">
+        <span class="input-group-text bg-transparent border-0 pe-0">
+            <i class="fa-solid fa-magnifying-glass text-muted"></i>
+        </span>
+        <input type="text" name="keyword" th:value="${keyword}" 
+               class="form-control bg-transparent border-0 shadow-none" 
+               placeholder="Nhập tên khoa cần tìm...">
+        <button class="btn btn-dark px-4" type="submit">Tìm kiếm</button>
+    </div>
+</form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #f8f9fa;">
+                        <tr class="text-muted small text-uppercase">
+                            <th class="ps-4 py-3">KHOA</th>
+                            <th class="py-3">LỚP</th>
+                            <th class="py-3">SINH VIÊN</th>
+                            <th class="py-3">TRẠNG THÁI</th>
+                            <th class="text-end pe-4 py-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Vòng lặp dữ liệu từ Backend (Biến là sv) -->
+                        <tr th:each="sv : ${listkhoa}">
+                            
+                            <!-- 1. Cột KHOA (Hiện cả Tên khoa và Mã khoa) -->
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-info bg-opacity-10 rounded d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                                        <i class="fa-solid fa-building-columns text-info" style="font-size: 14px;"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark" th:text="${sv.tenKhoa}">Công nghệ thông tin</div>
+                                        <small class="text-muted"><i class="fa-solid fa-hashtag me-1" style="font-size: 10px;"></i><span th:text="${sv.maKhoa}">CNTT</span></small>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <!-- 2. Cột LỚP -->
+                            <td>
+                                <!-- Sửa k.id thành sv.id -->
+                                <span class="badge bg-light text-dark border fw-normal px-2"  
+                                      th:text="${mapSoLop.get(#strings.toString(sv.id)) != null ? mapSoLop.get(#strings.toString(sv.id)) : 0}"></span>
+                            </td>
+
+                            <!-- 3. Cột SINH VIÊN -->
+                            <td>
+                                <!-- Sửa k.id thành sv.id VÀ thêm đuôi ': 0' -->
+                                <span class="badge bg-light text-dark border fw-normal px-2" 
+                                      th:text="${mapSoSinhVien.get(#strings.toString(sv.id)) != null ? mapSoSinhVien.get(#strings.toString(sv.id)) : 0}"></span>
+                            </td>
+                            
+                            <!-- 4. Cột TRẠNG THÁI -->
+                            <td>
+                                <span class="badge rounded-pill bg-success-subtle text-success px-3 " th:text="${sv.trangThai}">Đang học</span>
+                            </td>
+                            
+                            <!-- 5. Cột THAO TÁC -->
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+            <a th:href="@{/admin/khoa/update/{id}(id=${sv.id})}" 
+               class="btn btn-sm btn-outline-primary" 
+               style="border: none; background: #eef2ff; width: 32px; height: 32px; padding: 0; line-height: 32px; border-radius: 8px;">
+                <i class="fa-solid fa-pencil-alt"></i>
+            </a>
+           <!-- Đổi thẻ button thành thẻ a (link) để dùng th:href -->
+<a class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center" 
+   th:href="@{/admin/khoa/delete/{id}(id=${sv.id})}"
+   th:onclick="return confirm('Bạn có chắc chắn muốn xóa sinh viên này không?');"
+   style="border: none; background: #fff1f2; width: 32px; height: 32px; padding: 0; line-height: 32px; border-radius: 8px;">
+    
+    <i class="fa-solid fa-trash-can"></i>
+
+</a>
+        </div>
+                            </td>
+                            
+                        </tr>
+                        
+                        <!-- Hiển thị khi danh sách trống -->
+                        <tr th:if="${#lists.isEmpty(listkhoa)}">
+                            <td colspan="5" class="text-center text-muted py-4">Không tìm thấy khoa nào.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Phân trang (Pagination) -->
+        <div class="card-footer bg-white border-0 py-3" th:if="${totalPages != null and totalPages > 1}">
+            <nav>
+                <ul class="pagination pagination-sm mb-0 justify-content-end">
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/khoa(page=${currentPage - 1}, keyword=${keyword})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" 
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/khoa(page=${i}, keyword=${keyword})}" th:text="${i}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/khoa(page=${currentPage + 1}, keyword=${keyword})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+        </div> <!-- End container-fluid -->
+    </div> <!-- End main-content -->
+
+    <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Tìm lấy ô nhập liệu và cái Form chứa nó
+    const searchInput = document.querySelector('input[name="keyword"]');
+    const searchForm = document.getElementById('searchForm');
+    let timeout = null;
+
+    if (searchInput && searchForm) {
+        // Lắng nghe sự kiện mỗi khi bạn gõ một phím
+        searchInput.addEventListener('input', function() {
+            // Xóa bộ đếm thời gian cũ nếu bạn vẫn đang gõ liên tục
+            clearTimeout(timeout);
+            
+            // Bắt đầu đếm ngược 0.5s. Nếu bạn ngừng gõ quá thời gian này, form sẽ tự gửi đi
+            timeout = setTimeout(function() {
+                searchForm.submit();
+            }, 500); 
+        });
+
+        // Xử lý UX: Khi trang load lại, tự động trỏ chuột vào lại ô tìm kiếm
+        // và đưa con trỏ (dấu nháy) về cuối cùng của chữ đang gõ dở
+        let val = searchInput.value;
+        if (val) {
+            searchInput.focus();
+            searchInput.value = ''; 
+            searchInput.value = val;
+        }
+    }
+});
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

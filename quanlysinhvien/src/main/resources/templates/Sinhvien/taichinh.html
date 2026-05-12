@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài chính</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body>
+<div class="position-fixed top-0 start-0 vh-100 shadow-lg"
+     style="width: 260px; z-index: 1030; background-color: #1a252f;">
+    <div th:replace="~{layout/sidebar :: sidebar('taichinh')}"></div>
+</div>
+
+<div style="margin-left: 260px; min-height: 100vh;">
+    <div class="container-fluid p-4">
+
+        <!-- TIÊU ĐỀ -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2"
+             style="border-color: #00509e !important;">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Tra cứu học phí</h2>
+                <p class="text-muted mb-0 small">
+                    Học kỳ <span th:text="${hocKyChon}">2</span> -
+                    Năm học <span th:text="${namHocChon}">2025-2026</span>
+                </p>
+            </div>
+            <button type="button"
+                    class="btn shadow-sm d-flex align-items-center px-4 py-2 rounded-3 text-white fw-bold"
+                    style="background-color: #00509e;"
+                    data-bs-toggle="modal" data-bs-target="#qrPaymentModal">
+                <i class="fas fa-qrcode me-2"></i> Thanh toán học phí
+            </button>
+        </div>
+
+        <!-- BỘ LỌC HỌC KỲ -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <h6 class="fw-bold mb-3 mb-md-0" style="color: #00509e;">
+                    <i class="fas fa-filter me-2"></i> Lọc theo học kỳ
+                </h6>
+                <form method="get" th:action="@{/sinhvien/taichinh}" class="d-flex align-items-center gap-2">
+                    <select class="form-select shadow-none" style="min-width: 200px;" name="hocKy" onchange="this.form.submit()">
+    <option value="1" th:selected="${hocKyChon == 1}">Học kỳ 1 (2025-2026)</option>
+    <option value="2" th:selected="${hocKyChon == 2}">Học kỳ 2 (2025-2026)</option>
+</select>
+                    <input type="hidden" name="namHoc" value="2025-2026">
+                </form>
+            </div>
+        </div>
+
+        <!-- THỐNG KÊ -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle d-flex justify-content-center align-items-center me-3"
+                             style="width:50px;height:50px;background-color:rgba(0,80,158,0.1);">
+                            <i class="fas fa-file-invoice-dollar fs-4" style="color:#00509e;"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-medium mb-1">Tổng học phí học kỳ</div>
+                            <h4 class="fw-bold mb-0 text-dark">
+                                <span th:text="${#numbers.formatInteger(tongHocPhi, 0, 'COMMA')}">0</span>
+                                <span class="fs-6 fw-normal text-muted">VNĐ</span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle d-flex justify-content-center align-items-center me-3 bg-success bg-opacity-10"
+                             style="width:50px;height:50px;">
+                            <i class="fas fa-check-circle fs-4 text-success"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-medium mb-1">Đã nộp</div>
+                            <h4 class="fw-bold mb-0 text-success">0
+                                <span class="fs-6 fw-normal text-muted">VNĐ</span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100 p-3 border-start border-4 border-danger">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="rounded-circle d-flex justify-content-center align-items-center me-3 bg-danger bg-opacity-10"
+                             style="width:50px;height:50px;">
+                            <i class="fas fa-exclamation-circle fs-4 text-danger"></i>
+                        </div>
+                        <div>
+                            <div class="text-muted small fw-medium mb-1">Dư nợ cần thanh toán</div>
+                            <h4 class="fw-bold mb-0 text-danger">
+                                <span th:text="${#numbers.formatInteger(tongHocPhi, 0, 'COMMA')}">0</span>
+                                <span class="fs-6 fw-normal text-muted">VNĐ</span>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG CHI TIẾT -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-white p-4 border-bottom">
+                <h5 class="fw-bold mb-0" style="color: #00509e;">
+                    <i class="fas fa-list me-2"></i> Chi tiết học phí từng môn
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #f8f9fa; color: #1a252f;">
+                        <tr>
+                            <th class="py-3 px-4 fw-bold">Mã Lớp HP</th>
+                            <th class="py-3 fw-bold">Môn học</th>
+                            <th class="py-3 fw-bold text-center">Số TC</th>
+                            <th class="py-3 fw-bold text-end">Đơn giá (VNĐ/TC)</th>
+                            <th class="py-3 fw-bold text-end">Thành tiền (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ✅ Dùng chiTiet thay vì danhSach, không tính toán trong Thymeleaf -->
+                        <tr th:each="item : ${chiTiet}">
+                            <td class="px-4 fw-medium text-dark"
+                                th:text="${item.kq.lopHocPhan.maLopHP}">LHP_XX</td>
+                            <td>
+                                <div class="fw-bold text-dark"
+                                     th:text="${item.kq.lopHocPhan.hocPhan.tenHocPhan}">Tên môn</div>
+                                <div class="text-muted small">
+                                    Thứ <span th:text="${item.kq.lopHocPhan.thuTrongTuan}">2</span>
+                                    (Ca <span th:text="${item.kq.lopHocPhan.caHoc}">1</span>) |
+                                    Phòng: <span th:text="${item.kq.lopHocPhan.phongHoc}">-</span>
+                                </div>
+                            </td>
+                            <td class="text-center" th:text="${item.soTinChi}">3</td>
+                            <td class="text-end text-muted"
+                                th:text="${#numbers.formatInteger(item.donGia, 0, 'COMMA')}">0</td>
+                            <td class="text-end fw-bold text-dark"
+                                th:text="${#numbers.formatInteger(item.thanhTien, 0, 'COMMA')}">0</td>
+                        </tr>
+
+                        <!-- Không có dữ liệu -->
+                        <tr th:if="${#lists.isEmpty(chiTiet)}">
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox me-2"></i> Không có dữ liệu học kỳ này
+                            </td>
+                        </tr>
+
+                        <!-- Dòng tổng cộng -->
+                        <tr th:if="${!#lists.isEmpty(chiTiet)}"
+                            style="background-color: #f0f4ff; border-top: 2px solid #00509e;">
+                            <td colspan="4" class="px-4 fw-bold text-end" style="color: #00509e;">Tổng cộng:</td>
+                            <td class="fw-bold text-end" style="color: #00509e;">
+                                <span th:text="${#numbers.formatInteger(tongHocPhi, 0, 'COMMA')}">0</span> VNĐ
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- MODAL QR THANH TOÁN -->
+        <div class="modal fade" id="qrPaymentModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="modal-header text-white px-4 py-3" style="background-color: #00509e;">
+                        <h5 class="modal-title fw-bold">
+                            <i class="fas fa-qrcode me-2"></i> Thanh toán học phí
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 text-center bg-light">
+                        <h6 class="text-danger fw-bold mb-1">Số tiền cần thanh toán:</h6>
+                        <h2 class="fw-bolder text-dark mb-4">
+                            <span th:text="${#numbers.formatInteger(tongHocPhi, 0, 'COMMA')}">0</span> VNĐ
+                        </h2>
+                        <div class="bg-white p-3 rounded-4 shadow-sm d-inline-block border mb-4">
+                            <!-- ✅ Thay bằng ảnh QR tĩnh của bạn -->
+                         <img th:src="@{/img/qr-thanhtoan.png}" 
+     alt="Mã QR Thanh Toán" class="img-fluid rounded-3" style="max-width: 250px;">
+                            <p class="small text-muted mt-3 mb-0">
+                                <i class="fas fa-mobile-alt me-1"></i> Quét mã bằng ứng dụng Ngân hàng
+                            </p>
+                        </div>
+                        <div class="text-start bg-white p-4 rounded-4 border shadow-sm">
+                            <h6 class="fw-bold text-dark mb-3 border-bottom pb-2">Thông tin chuyển khoản</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Ngân hàng:</span>
+                                <span class="fw-medium text-dark">MB Bank (Quân Đội)</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Tên tài khoản:</span>
+                                <span class="fw-medium text-dark">VU THANH LUAN</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Số tài khoản:</span>
+                                <span class="fw-bold" style="color: #00509e;">4404032006</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Nội dung chuyển:</span>
+                                <span class="fw-bold text-danger"
+                                      th:text="${sinhVien.maSV} + ' HOCPHI HK' + ${hocKyChon}">SV_HOCPHI</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white px-4 py-3 justify-content-center">
+                        <p class="small text-muted mb-0 text-center">
+                            <i class="fas fa-info-circle me-1 text-primary"></i>
+                            Hệ thống sẽ tự động cập nhật sau 5-10 phút khi thanh toán thành công.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

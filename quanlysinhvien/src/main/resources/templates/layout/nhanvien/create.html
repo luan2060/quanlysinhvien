@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinh Viên</title>
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Hiệu ứng cho các card thống kê */
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" 
+         style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+   
+
+             
+        
+        <div style="margin-left: 260px; min-height: 100vh;">
+    <div class="container-fluid p-4">
+        
+        <!-- Tiêu đề và nút quay lại -->
+         <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Hệ Thống Quản Lý giảng Viên</h4>
+                    <p class="text-muted small mb-0">Thêm mới thông tin vào cơ sở dữ liệu</p>
+                </div>
+                <a th:href="@{/admin/nhanvien}" class="btn btn-light border shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Quay lại danh sách
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-primary">
+                        <i class="fa-solid fa-user-plus me-2"></i>Thông tin chi tiết nhân viên
+                    </h6>
+                </div>
+                <div class="card-body p-4">
+
+        <!-- Khối Form -->
+       
+           
+                
+                <!-- Form bắt đầu -->
+                <form th:action="@{/admin/nhanvien/create}" th:object="${nhanvien}" method="post">
+                    
+                    <div class="row g-4">
+                        <!-- Hàng 1: Mã NV & Tên NV -->
+                        
+                        <div class="col-md-6">
+    <label class="form-label fw-medium text-dark small">Mã Nhân Viên <span class="text-danger">*</span></label>
+    <input type="text" th:field="*{maNV}" 
+           class="form-control bg-light border-0 py-2" 
+           th:classappend="${#fields.hasErrors('maNV')} ? 'is-invalid' : ''"
+           required placeholder="Nhập mã nhân viên">
+    
+    <!-- HIỂN THỊ THÔNG BÁO LỖI TẠI ĐÂY -->
+    <div class="invalid-feedback" th:if="${#fields.hasErrors('maNV')}" th:errors="*{maNV}">
+        Lỗi mã nhân viên
+    </div>
+</div>
+
+                        <div class="col-md-6">
+                            <label for="tenNV" class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tenNV" th:field="*{tenNV}" placeholder="Nhập họ và tên" required>
+                        </div>
+
+                        <!-- Hàng 2: Ngày sinh & Giới tính -->
+                        <div class="col-md-6">
+                            <label for="ngaySinh" class="form-label fw-bold">Ngày sinh</label>
+                            <input type="date" class="form-control" id="ngaySinh" th:field="*{ngaySinh}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gioiTinh" class="form-label fw-bold">Giới tính</label>
+                            <select class="form-select" id="gioiTinh" th:field="*{gioiTinh}">
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+
+                        <!-- Hàng 3: Email & Số điện thoại -->
+                    <div class="col-md-6">
+    <label class="form-label fw-medium text-dark small">Email <span class="text-danger">*</span></label>
+    <input type="text" th:field="*{email}" 
+           class="form-control bg-light border-0 py-2" 
+           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+           required placeholder="Nhập email nhân viên">
+    
+    <!-- HIỂN THỊ THÔNG BÁO LỖI TẠI ĐÂY -->
+    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+        Lỗi email nhân viên
+    </div>
+</div>
+                        <div class="col-md-6">
+                            <label for="sdt" class="form-label fw-bold">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="sdt" th:field="*{sdt}" placeholder="Nhập số điện thoại">
+                        </div>
+
+                      
+                
+
+                        <!-- Hàng 5: Học vị & Chức vụ -->
+                        <div class="col-md-6">
+                            <label for="hocVi" class="form-label fw-bold">Học vị</label>
+                            <select class="form-select" id="hocVi" th:field="*{hocVi}">
+                                <option value="">-- Chọn học vị --</option>
+                                <option value="Cử nhân">Cử nhân</option>
+                                <option value="Thạc sĩ">Thạc sĩ</option>
+                                <option value="Tiến sĩ">Tiến sĩ</option>
+                                <option value="Phó Giáo sư">Phó Giáo sư</option>
+                                <option value="Giáo sư">Giáo sư</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="chucVu" class="form-label fw-bold">Chức vụ</label>
+                           <select class="form-select" id="chucVu" th:field="*{chucVu}">
+                                <option value="">-- Chọn chức vụ --</option>
+                                <option value="Nhân Viên tài chính & hành chính">Nhân Viên tài chính & hành chính</option>
+                                <option value="Giảng viên">Giảng viên</option>
+                                <option value="Nhân viên phòng đào tạo">Nhân viên phòng đào tạo</option>
+                         
+                            </select>
+                        </div>
+
+                        <!-- Hàng 6: KHOA (Load từ Database) & Trạng thái -->
+                      
+
+                             <div class="col-md-6">
+                                <label class="form-label fw-medium text-dark small">Thuộc khoa <span class="text-danger">*</span></label>
+                                <select name="khoa" class="form-select bg-light border-0 py-2" required>
+                                    <option value="">-- Chọn khoa trực thuộc --</option>
+                                <!-- Vòng lặp lấy danh sách khoa từ Controller -->
+                                <option th:each="k : ${listkhoa}" 
+                                        th:value="${k.id}" 
+                                        th:text="${k.tenKhoa}">Tên Khoa</option>
+                                </select> 
+                            </div>
+                        <div class="col-md-6">
+                            <label for="trangThai" class="form-label fw-bold">Trạng thái</label>
+                            <select class="form-select" id="trangThai" th:field="*{trangThai}">
+                                <option value="Đang công tác">Đang công tác</option>
+                                <option value="Đang giảng dạy">Đang giảng dạy</option>                       
+                                <option value="Thôi việc">Thôi việc</option>
+                                <option value="Nghỉ hưu">Nghỉ hưu</option>
+                            </select>
+                        </div>
+
+                        <!-- Hàng 7: Mật khẩu -->
+                        
+                         <div class="col-6">
+                            <label for="diaChi" class="form-label fw-bold">Địa chỉ</label>
+                            <input type="text" class="form-control" id="diaChi" th:field="*{diaChi}" placeholder="Nhập địa chỉ thường trú">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-bold">Mật khẩu tài khoản<span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Nhập mật khẩu cho nhân viên">
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted">
+
+                    <!-- Nút Lưu -->
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="reset" class="btn btn-light border px-4">Làm mới</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Lưu thông tin
+                        </button>
+                    </div>
+
+                </form>
+           
+        </div>
+    </div>
+</div>
+    </div> <!-- End container-fluid -->
+</div> <!-- End main-content -->
+   
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

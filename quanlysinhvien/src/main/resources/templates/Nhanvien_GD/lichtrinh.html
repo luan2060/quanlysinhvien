@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lớp Phụ Trách - Giảng Viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+<!-- Sidebar -->
+<div class="position-fixed top-0 start-0 vh-100 shadow"
+     style="width: 260px; z-index: 1030; background-color: #1a252f;">
+    <div th:replace="~{layout/sidebarNV :: sidebarNV('lopphutrach')}"></div>
+</div>
+
+<!-- Main Content -->
+<div style="margin-left: 260px; min-height: 100vh;">
+    <div class="container-fluid p-4">
+
+        <!-- TIÊU ĐỀ & FORM LỌC -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom border-2"
+             style="border-color: #00509e !important;">
+            <div class="mb-3 mb-md-0">
+                <h3 class="fw-bold text-dark mb-1">Thời khóa biểu giảng dạy</h3>
+                <p class="text-muted fw-medium mb-0 small">
+                    Học kỳ <span th:text="${hocKyChon}">1</span> –
+                    Năm học <span th:text="${namHocChon}">2025-2026</span>
+                </p>
+            </div>
+
+            <!-- FORM LỌC -->
+            <form method="get" th:action="@{/nhanvien/lichtrinh}" class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm shadow-sm" style="width:120px;" name="hocKy">
+                    <option value="1" th:selected="${hocKyChon == 1}">Học kỳ 1</option>
+                    <option value="2" th:selected="${hocKyChon == 2}">Học kỳ 2</option>
+                </select>
+                <select class="form-select form-select-sm shadow-sm" style="width:130px;" name="namHoc">
+                    <option value="2024-2025" th:selected="${namHocChon == '2024-2025'}">2024-2025</option>
+                    <option value="2025-2026" th:selected="${namHocChon == '2025-2026'}">2025-2026</option>
+                </select>
+                <button type="submit" class="btn btn-sm text-white fw-bold shadow-sm"
+                        style="background-color: #00509e;">
+                    <i class="fas fa-filter me-1"></i> Lọc
+                </button>
+            </form>
+        </div>
+
+        <!-- LỊCH THEO THỨ -->
+        <div class="row g-3 mx-0">
+            <div th:each="entry : ${lichTheoThu}"
+                 class="col-12 col-md-6 col-xl-2 px-1 d-flex flex-column">
+
+                <!-- Tiêu đề thứ -->
+                <div class="text-white text-center fw-bold p-2 rounded shadow-sm mb-3"
+                     style="background-color: #00509e;"
+                     th:text="'THỨ ' + ${entry.key}">THỨ 2</div>
+
+                <!-- Có lịch -->
+                <div th:if="${!#lists.isEmpty(entry.value)}"
+                     class="flex-grow-1 d-flex flex-column gap-3">
+                    <div th:each="lhp : ${entry.value}"
+                         class="card border-0 shadow-sm"
+                         style="border-left: 5px solid #00509e !important; border-radius: 12px;">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold mb-1" style="color: #00509e; font-size: 0.9rem;"
+                                th:text="${lhp.hocPhan.tenHocPhan}">Tên môn</h6>
+                            <div class="text-secondary small fw-semibold mb-2"
+                                 th:text="'Mã: ' + ${lhp.maLopHP}">Mã LHP</div>
+                            <div class="mb-2">
+                                <span class="badge"
+                                      style="background-color: #e8f0fe; color: #00509e; padding: 4px 8px; font-size: 0.75rem;"
+                                      th:text="'Ca ' + ${lhp.caHoc}">Ca 1</span>
+                                <span class="small text-muted ms-1 fw-medium"
+                                      th:text="${lhp.gioHoc != null} ? '(' + ${lhp.gioHoc} + ')' : ''"></span>
+                            </div>
+                            <hr class="my-2 opacity-25">
+                            <div class="small mb-1 text-dark fw-medium">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>Phòng:
+                                <span class="fw-bold"
+                                      th:text="${lhp.phongHoc != null} ? ${lhp.phongHoc} : '-'">-</span>
+                            </div>
+                            <div class="small text-dark fw-medium">
+                                <i class="fas fa-users me-2" style="color: #00509e;"></i>Sĩ số:
+                                <span class="fw-bold"
+                                      th:text="${lhp.siSoToiDa != null} ? ${lhp.siSoToiDa} + ' SV' : '-'">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Không có lịch -->
+                <div th:if="${#lists.isEmpty(entry.value)}"
+                     class="flex-grow-1 rounded d-flex flex-column justify-content-center align-items-center py-5 bg-white shadow-sm"
+                     style="border: 2px dashed #dee2e6; min-height: 120px;">
+                    <i class="fas fa-mug-hot fs-3 mb-2" style="color: #adb5bd;"></i>
+                    <span class="small fw-semibold" style="color: #adb5bd;">Không có lịch</span>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+<script>
+  // Lấy thứ hiện tại: 2=Thứ 2, 3=Thứ 3, ..., 8=Chủ nhật
+  const today = new Date().getDay(); // 0=CN, 1=T2, ..., 6=T7
+
+  // Chuyển sang định dạng thứ trong HTML (2–8, CN=8)
+  const map = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 0: 8 };
+  const thuHom = map[today];
+
+  document.querySelectorAll('.col-12.col-md-6.col-xl-2').forEach(col => {
+    const header = col.querySelector('div[style*="background-color"]');
+    if (!header) return;
+
+    const thuText = header.textContent.trim(); // ví dụ: "THỨ 2"
+    const soThu = parseInt(thuText.replace('THỨ ', ''));
+
+    if (soThu === thuHom) {
+      // Đổi màu header thành xanh lá nổi bật
+      header.style.backgroundColor = '#16a34a';
+    
+
+      // Thêm viền xanh lá cho các card trong cột
+      col.querySelectorAll('.card').forEach(card => {
+        card.style.borderLeft = '5px solid #16a34a';
+        card.style.boxShadow = '0 4px 12px rgba(22,163,74,0.15)';
+      });
+
+      // Đổi màu badge "Ca X" trong cột này
+      col.querySelectorAll('.badge').forEach(badge => {
+        badge.style.backgroundColor = '#dcfce7';
+        badge.style.color = '#166534';
+      });
+
+      // Màu tiêu đề môn học
+      col.querySelectorAll('h6').forEach(h => {
+        h.style.color = '#16a34a';
+      });
+    }
+  });
+</script>
+</html>

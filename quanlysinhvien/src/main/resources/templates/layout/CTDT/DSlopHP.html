@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sinh Viên - Lớp Học Phần</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style> body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+    
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+            
+            <!-- 1. Header & Nút Quay Lại -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Chi Tiết Lớp Học Phần</h4>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a th:href="@{/admin/hocphan}" class="text-decoration-none text-primary">Học Phần</a></li>
+                            <li class="breadcrumb-item active text-muted" aria-current="page">Danh sách lớp</li>
+                        </ol>
+                    </nav>
+                </div>
+                <a th:href="@{/admin/hocphan}" class="btn btn-light border shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Quay lại danh sách
+                </a>
+            </div>
+
+            <!-- 2. Khối Thông Tin Lớp Học Phần & Giảng Viên -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px; border-top: 5px solid #0d6efd;">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8 border-end">
+                            <h5 class="fw-bold text-primary mb-3" th:text="${lophocphan.hocPhan.tenHocPhan} + ' - ' + ${lophocphan.tenLopHP}">Lập trình Java - Nhóm 1</h5>
+                            <div class="row text-muted small">
+                                <div class="col-sm-6 mb-2">
+                                    <i class="fa-solid fa-hashtag me-2 text-secondary"></i>Mã Lớp HP: <strong class="text-dark" th:text="${lophocphan.maLopHP}">LHP001</strong>
+                                </div>
+                                <div class="col-sm-6 mb-2">
+                                    <i class="fa-solid fa-calendar-days me-2 text-secondary"></i>Học kỳ: <strong class="text-dark" th:text="'HK ' + ${lophocphan.hocKy} + ' (' + ${lophocphan.namHoc} + ')'">HK 1 (2025-2026)</strong>
+                                </div>
+                                <div class="col-sm-6 mb-2">
+                                    <i class="fa-solid fa-book me-2 text-secondary"></i>Tín chỉ: <strong class="text-dark" th:text="${lophocphan.hocPhan.soTinChi}">3</strong>
+                                </div>
+                                <div class="col-sm-6 mb-2">
+                                    <i class="fa-solid fa-users me-2 text-secondary"></i>Sĩ số: 
+                                    <strong class="text-primary" th:text="${#lists.size(listSinhVien)}">45</strong> / <span th:text="${lophocphan.siSoToiDa}">50</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hiển thị Giảng Viên -->
+                        <div class="col-md-4 text-center">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-2" style="width: 60px; height: 60px;">
+                                <i class="fa-solid fa-user-tie fs-3"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-1">Giảng viên phụ trách</h6>
+                            <p class="mb-0 text-success fw-medium" th:text="${lophocphan.giangVien != null ? lophocphan.giangVien.tenNV : 'Chưa phân công'}">Th.S Nguyễn Văn A</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Bảng Danh Sách Sinh Viên -->
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-white border-0 py-3 mt-2 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 ps-2"><i class="fa-solid fa-clipboard-user text-primary me-2"></i>Danh sách Sinh Viên</h5>
+                    
+                    <!-- Nút Mở Modal Thêm Sinh Viên vào lớp -->
+                    <button class="btn btn-sm btn-primary fw-bold px-3" data-bs-toggle="modal" data-bs-target="#addSinhVienModal">
+                        <i class="fa-solid fa-user-plus me-1"></i>Thêm sinh viên
+                    </button>
+                </div>
+                
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="ps-4 py-3 text-center" style="width: 60px;">STT</th>
+                                    <th class="py-3">MÃ SV</th>
+                                    <th class="py-3">HỌ VÀ TÊN</th>
+                                    <th class="py-3">LỚP HÀNH CHÍNH</th>
+                                    <th class="py-3 text-center">TRẠNG THÁI</th>
+                                    <th class="text-end pe-4 py-3">XÓA KHỎI LỚP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Vòng lặp danh sách sinh viên -->
+                                <tr th:each="sv, stat : ${listSinhVien}">
+                                    <td class="ps-4 text-center fw-medium text-muted" th:text="${stat.count}">1</td>
+                                    <td class="fw-bold text-dark" th:text="${sv.maSV}">SV12345</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                                                <i class="fa-solid fa-user-graduate text-primary"></i>
+                                            </div>
+                                            <span class="fw-medium text-dark" th:text="${sv.hoTen}">Trần Thị B</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border fw-normal px-2" th:text="${sv.lopHanhChinh != null ? sv.lopHanhChinh.tenLopHc : 'Chưa cập nhật'}">ĐH11CNTT</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="text-success small fw-medium"><i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> Đang học</span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <!-- Gọi API xóa sinh viên khỏi lớp học phần -->
+                                        <a th:href="@{/admin/lophocphan/{lopId}/remove-sv/{svId}(lopId=${lophocphan.id}, svId=${sv.id})}" 
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa sinh viên này khỏi lớp học phần không?');" 
+                                           class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center" 
+                                           style="border: none; background: #fff1f2; width: 32px; height: 32px; border-radius: 8px;"
+                                           title="Rút lớp">
+                                            <i class="fa-solid fa-user-minus"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Khi lớp chưa có ai -->
+                                <tr th:if="${#lists.isEmpty(listSinhVien)}">
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="fa-solid fa-user-slash d-block fs-2 mb-2 text-secondary"></i>
+                                        Lớp học phần này hiện chưa có sinh viên nào đăng ký.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 4. MODAL: Thêm Sinh Viên Mới Vào Lớp -->
+    <div class="modal fade" id="addSinhVienModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-user-plus text-primary me-2"></i>Thêm sinh viên vào lớp</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/admin/lophocphan/add-sinhvien}" method="post">
+                    <div class="modal-body">
+                        <!-- Trường ẩn giữ ID của lớp HP -->
+                        <input type="hidden" name="lopHocPhanId" th:value="${lophocphan.id}">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Nhập Mã Sinh Viên</label>
+                            <input type="text" name="maSV" class="form-control form-control-lg" placeholder="Ví dụ: SV123456" required>
+                            <div class="form-text mt-2"><i class="fa-solid fa-circle-info me-1"></i>Hệ thống sẽ tự động tìm kiếm sinh viên theo mã để thêm vào lớp.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">Xác nhận thêm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

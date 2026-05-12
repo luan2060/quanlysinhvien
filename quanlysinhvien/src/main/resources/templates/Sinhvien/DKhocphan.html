@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký học phần</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg"
+         style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/sidebar :: sidebar('hocphan')}"></div>
+    </div>
+
+    <!-- NỘI DUNG CHÍNH -->
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+
+            <!-- PHẦN 1: TIÊU ĐỀ -->
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-2"
+                 style="border-color: #00509e !important;">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1">Đăng ký học phần</h2>
+                    <p class="text-muted mb-0 small">
+                        Học kỳ <span th:text="${hocKy}"></span> – Năm học <span th:text="${namHoc}"></span>
+                    </p>
+                </div>
+                <div class="bg-light border rounded-3 px-4 py-2 text-center shadow-sm">
+                    <span class="d-block text-muted small fw-medium">Tín chỉ đã đăng ký</span>
+                    <span class="fs-4 fw-bold" style="color: #00509e;">
+                        <span th:text="${tongTinChi}">0</span>
+                        <span class="fs-6 text-dark fw-normal">/ 20</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- THÔNG BÁO THÀNH CÔNG -->
+            <div th:if="${successMsg}"
+                 class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${successMsg}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- THÔNG BÁO LỖI -->
+            <div th:if="${errorMsg}"
+                 class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${errorMsg}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- PHẦN 2: BỘ LỌC -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <form method="get" action="/sinhvien/hocphan" class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-medium">Học kỳ</label>
+                            <select name="hocKy" class="form-select border-secondary border-opacity-25 shadow-none">
+                                <option value="1" th:selected="${hocKy == 1}">Học kỳ 1</option>
+                                <option value="2" th:selected="${hocKy == 2}">Học kỳ 2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-muted small fw-medium">Năm học</label>
+                            <select name="namHoc" class="form-select border-secondary border-opacity-25 shadow-none">
+                                <option value="2024-2025" th:selected="${namHoc == '2024-2025'}">2024-2025</option>
+                                <option value="2025-2026" th:selected="${namHoc == '2025-2026'}">2025-2026</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn w-100 fw-medium shadow-sm"
+                                    style="background-color: #00509e; color: #ffffff;">
+                                <i class="fas fa-filter me-1"></i> Lọc kết quả
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- PHẦN 3: BẢNG DANH SÁCH -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: #00509e; color: #ffffff;">
+                            <tr>
+                                <th class="px-4 py-3 fw-medium">Mã Lớp HP</th>
+                                <th class="py-3 fw-medium">Môn học / Lớp học phần</th>
+                                <th class="py-3 fw-medium text-center">Tín chỉ</th>
+                                <th class="py-3 fw-medium">Giảng viên</th>
+                                <th class="py-3 fw-medium text-center">Sĩ số</th>
+                                <th class="py-3 fw-medium text-center">Trạng thái</th>
+                                <th class="px-4 py-3 fw-medium text-end">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white">
+
+                            <tr th:each="lop : ${danhSachLop}">
+
+                                <td class="px-4 fw-medium text-dark"
+                                    th:text="${lop.maLopHP}"></td>
+
+                                <td>
+                                    <div class="fw-bold text-dark"
+                                         th:text="${lop.tenLopHP}"></div>
+                                    <div class="text-muted small"
+                                         th:text="${lop.hocPhan != null} ? ${lop.hocPhan.tenHocPhan} : ''"></div>
+                                </td>
+
+                                <td class="text-center"
+                                    th:text="${lop.hocPhan != null} ? ${lop.hocPhan.soTinChi} : '-'"></td>
+
+                                <!-- ✅ Sửa hoTen → tenNV cho đúng entity Nhanvien -->
+                                <td th:text="${lop.giangVien != null} ? ${lop.giangVien.tenNV} : 'Chưa phân công'"></td>
+
+                                <td class="text-center">
+                                    <!-- ✅ Thêm kiểm tra null cho danhSachKetQua -->
+                                    <span th:if="${lop.danhSachKetQua == null or #lists.size(lop.danhSachKetQua) < lop.siSoToiDa}"
+                                          class="badge bg-light text-dark border"
+                                          th:text="${lop.danhSachKetQua == null ? 0 : #lists.size(lop.danhSachKetQua)} + ' / ' + ${lop.siSoToiDa}"></span>
+                                    <span th:if="${lop.danhSachKetQua != null and #lists.size(lop.danhSachKetQua) >= lop.siSoToiDa}"
+                                          class="badge bg-danger bg-opacity-10 text-danger border border-danger"
+                                          th:text="${#lists.size(lop.danhSachKetQua)} + ' / ' + ${lop.siSoToiDa}"></span>
+                                </td>
+
+                                <td class="text-center">
+                                    <span th:if="${idLopDaDangKy.contains(lop.id)}"
+                                          class="badge bg-success bg-opacity-10 text-success border border-success">
+                                        <i class="fas fa-check me-1"></i> Đã đăng ký
+                                    </span>
+                                    <span th:if="${!idLopDaDangKy.contains(lop.id)
+                                                  and lop.danhSachKetQua != null
+                                                  and #lists.size(lop.danhSachKetQua) >= lop.siSoToiDa}"
+                                          class="badge bg-danger text-white">
+                                        Lớp đầy
+                                    </span>
+                                    <span th:if="${!idLopDaDangKy.contains(lop.id)
+                                                  and (lop.danhSachKetQua == null
+                                                       or #lists.size(lop.danhSachKetQua) < lop.siSoToiDa)}"
+                                          class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
+                                        Chưa đăng ký
+                                    </span>
+                                </td>
+
+                                <td class="px-4 text-end">
+
+                                    <form th:if="${idLopDaDangKy.contains(lop.id)}"
+                                          th:action="@{/sinhvien/hocphan/huy-dang-ky}"
+                                          method="post" style="display:inline;">
+                                        <input type="hidden" name="lopId"  th:value="${lop.id}">
+                                        <input type="hidden" name="hocKy"  th:value="${hocKy}">
+                                        <input type="hidden" name="namHoc" th:value="${namHoc}">
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger px-3 fw-medium">
+                                            <i class="fas fa-trash-alt me-1"></i> Hủy ĐK
+                                        </button>
+                                    </form>
+
+                                    <form th:if="${!idLopDaDangKy.contains(lop.id)
+                                                  and (lop.danhSachKetQua == null
+                                                       or #lists.size(lop.danhSachKetQua) < lop.siSoToiDa)}"
+                                          th:action="@{/sinhvien/hocphan/dang-ky}"
+                                          method="post" style="display:inline;">
+                                        <input type="hidden" name="lopId"  th:value="${lop.id}">
+                                        <input type="hidden" name="hocKy"  th:value="${hocKy}">
+                                        <input type="hidden" name="namHoc" th:value="${namHoc}">
+                                        <button type="submit"
+                                                class="btn btn-sm px-3 fw-medium"
+                                                style="background-color:#00509e; color:#ffffff;">
+                                            <i class="fas fa-plus me-1"></i> Đăng ký
+                                        </button>
+                                    </form>
+
+                                    <button th:if="${!idLopDaDangKy.contains(lop.id)
+                                                    and lop.danhSachKetQua != null
+                                                    and #lists.size(lop.danhSachKetQua) >= lop.siSoToiDa}"
+                                            class="btn btn-sm btn-secondary px-3 fw-medium"
+                                            disabled>
+                                        <i class="fas fa-ban me-1"></i> Hết chỗ
+                                    </button>
+
+                                </td>
+                            </tr>
+
+                            <tr th:if="${danhSachLop == null or #lists.isEmpty(danhSachLop)}">
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                                    Không có lớp học phần nào trong học kỳ này.
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer bg-white p-3 border-top d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">
+                        Tổng số <span th:text="${danhSachLop != null ? #lists.size(danhSachLop) : 0}">0</span> lớp học phần
+                    </span>
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled">
+                            <a class="page-link text-secondary" href="#">Trước</a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link border-0" style="background-color: #00509e;" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link text-dark" href="#">Sau</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

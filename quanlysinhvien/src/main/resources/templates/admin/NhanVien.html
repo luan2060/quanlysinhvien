@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinh Viên</title>
+    <!-- Bootstrap 5 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Hiệu ứng cho các card thống kê */
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" 
+         style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+   
+<div style="margin-left: 260px; min-height: 100vh;">
+    <div class="container-fluid p-4">
+        <!-- 1. Header & Nút thêm mới -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold text-dark mb-1">Quản lý nhân viên</h4>
+                <nav aria-label="breadcrumb">
+                    <p class="text-muted mb-0">Quản lý đội ngũ nhân viên tại trường</p>
+                </nav>
+            </div>
+            <a th:href="@{/admin/nhanvien/create}" class="btn btn-primary shadow-sm" style="border-radius: 8px;">
+                <i class="fa-solid fa-plus me-2"></i>Thêm nhân viên
+            </a>
+        </div>
+
+        <!-- 2. Khối Thống kê (4 ô nhỏ) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #0d6efd;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-3">
+                            <i class="fa-solid fa-user-tie fs-4"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block fw-semibold">TỔNG NHÂN VIÊN</small>
+                            <span class="fw-bold fs-5" th:text="${sumnhanvien}">120</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #198754;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                            <i class="fa-solid fa-chalkboard-user fs-4"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block fw-semibold">ĐANG GIẢNG DẠY</small>
+                            <span class="fw-bold fs-5" th:text="${totaldangday}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #ffc107;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-3 text-warning me-3">
+                            <i class="fa-solid fa-plane-departure text-warning fs-4"></i> 
+                        </div>
+                        <div>
+                            <small class="text-muted d-block fw-semibold">ĐANG CÔNG TÁC</small>
+                            <span class="fw-bold fs-5" th:text="${totalcongtac}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid #dc3545;">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-danger bg-opacity-10 p-3 rounded-3 text-danger me-3">
+                            <i class="fa-solid fa-user-xmark text-danger fs-4"></i> 
+                        </div>
+                        <div>
+                            <small class="text-muted d-block fw-semibold">NGHỈ HƯU/THÔI VIỆC</small>
+                            <span class="fw-bold fs-5" th:text="${totalnghihuu_thoiviec}">200</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Khu vực bảng và tìm kiếm -->
+        <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+            <div class="card-header bg-white border-0 py-3 mt-2">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <h5 class="fw-bold mb-0 ps-2">Danh sách giảng viên</h5>
+                    </div>
+                    <div class="col-md-5">
+                        <form th:action="@{/admin/nhanvien}" method="get">
+                            <div class="input-group" style="border-radius: 10px; overflow: hidden; background: #f8f9fa;">
+                                <span class="input-group-text bg-transparent border-0 pe-0">
+                                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                                </span>
+                                <input type="text" name="keyword" th:value="${keyword}" 
+                                       class="form-control bg-transparent border-0 shadow-none" 
+                                       placeholder="Nhập tên giảng viên cần tìm...">
+                                <button class="btn btn-dark px-4" type="submit">Tìm kiếm</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: #f8f9fa;">
+                            <tr class="text-muted small text-uppercase">
+                                <th class="ps-4 py-3">GIẢNG VIÊN</th>
+                            
+                                <th class="py-3">KHOA</th>
+                                <th class="py-3">LIÊN HỆ</th>
+                                <th class="py-3">TRẠNG THÁI</th>
+                                <th class="text-end pe-4 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherTableBody">
+                            
+                            <!-- Vòng lặp dữ liệu từ Backend -->
+                            <tr th:each="gv : ${NhanVien}">
+                                <!-- 1. Tên & Mã giảng viên -->
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fa-solid fa-user-tie text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark" th:text="${gv.TenNV}">Trần Thị B</div>
+                                            <small class="text-muted" th:text="${gv.maNV}">GV123456</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- 2. Bộ môn -->
+                                
+
+                                <!-- 3. Khoa -->
+                                <td>
+                                    <div class="text-dark" th:text="${gv.khoa?.tenKhoa}">Khoa Công nghệ thông tin</div>
+                                </td>
+
+                                <!-- 4. Liên hệ (Email & SĐT) -->
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <small class="text-dark">
+                                            <i class="fa-solid fa-envelope me-1 text-muted" style="font-size: 0.8rem;"></i>
+                                            <span th:text="${gv.email}">email@example.com</span>
+                                        </small>
+                                        <small class="text-muted mt-1">
+                                            <i class="fa-solid fa-phone me-1 text-muted" style="font-size: 0.8rem;"></i>
+                                            <span text="${gv.sdt}">0123.456.789</span>
+                                        </small>
+                                    </div>
+                                </td>
+
+                                <!-- 5. Trạng thái -->
+                                <td>
+                                    <!-- Logic màu sắc dựa trên trạng thái -->
+                                    <span th:if="${gv.trangThai == 'Đang giảng dạy'}" class="badge rounded-pill bg-success-subtle text-success px-3">Đang giảng dạy</span>
+                                    <span th:if="${gv.trangThai == 'Đang công tác'}" class="badge rounded-pill bg-warning-subtle text-warning px-3">Đang công tác</span>
+                                    <span th:unless="${gv.trangThai == 'Đang giảng dạy' or gv.trangThai == 'Đang công tác'}" 
+                                          class="badge rounded-pill bg-secondary-subtle text-secondary px-3" th:text="${gv.trangThai}">Khác</span>
+                                </td>
+
+                                <!-- 6. Hành động -->
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a th:href="@{/admin/nhanvien/update/{id}(id=${gv.id})}" 
+                                           class="btn btn-sm btn-outline-primary" 
+                                           style="border: none; background: #eef2ff; width: 32px; height: 32px; padding: 0; line-height: 32px; border-radius: 8px;"
+                                           title="Sửa">
+                                            <i class="fa-solid fa-pencil-alt"></i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-danger d-inline-flex align-items-center justify-content-center" 
+                                           th:href="@{/admin/nhanvien/delete/{id}(id=${gv.id})}"
+                                           th:onclick="return confirm('Bạn có chắc chắn muốn xóa giảng viên này không?');"
+                                           style="border: none; background: #fff1f2; width: 32px; height: 32px; padding: 0; line-height: 32px; border-radius: 8px;"
+                                           title="Xóa">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Hiển thị khi không có dữ liệu -->
+                            <tr th:if="${#lists.isEmpty(NhanVien)}">
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fa-solid fa-folder-open d-block fs-2 mb-2 text-secondary"></i>
+                                    Không tìm thấy dữ liệu nhân viên phù hợp
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Phân trang (Pagination) ở đây nếu cần -->
+            
+        </div>
+    </div> <!-- End container-fluid -->
+</div> <!-- End main-content -->
+   
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput = document.querySelector('input[name="keyword"]');
+        const tableBody = document.getElementById('teacherTableBody');
+
+        let debounceTimer;
+
+        searchInput.addEventListener("input", function () {
+
+            clearTimeout(debounceTimer);
+
+            debounceTimer = setTimeout(() => {
+
+                const keyword = searchInput.value;
+
+                tableBody.style.opacity = "0.5";
+
+                fetch(`/admin/nhanvien?keyword=${encodeURIComponent(keyword)}`)
+                    .then(response => response.text())
+                    .then(html => {
+
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, "text/html");
+
+                        const newTableBody = doc.getElementById("teacherTableBody");
+
+                        if (newTableBody) {
+                            tableBody.innerHTML = newTableBody.innerHTML;
+                        }
+
+                        tableBody.style.opacity = "1";
+                    })
+                    .catch(error => {
+                        console.error("Lỗi tìm kiếm:", error);
+                        tableBody.style.opacity = "1";
+                    });
+
+            }, 400);
+
+        });
+
+    });
+</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Điểm - Chọn Lớp Học Phần</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style> body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } </style>
+</head>
+<body>
+    <div class="position-fixed top-0 start-0 vh-100 shadow-lg" style="width: 260px; z-index: 1030; background-color: #1a252f;">
+        <div th:replace="~{layout/header :: header('tongquan')}"></div>
+    </div>
+
+    <div style="margin-left: 260px; min-height: 100vh;">
+        <div class="container-fluid p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Quản Lý Điểm Sinh Viên</h4>
+                    <p class="text-muted mb-0">Chọn lớp học phần để tiến hành nhập hoặc sửa điểm</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header bg-white border-0 py-3 mt-2">
+                    <h5 class="fw-bold mb-0 ps-2">
+                        <i class="fa-solid fa-list-check text-primary me-2"></i>Danh sách Lớp Học Phần
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="ps-4 py-3">MÃ LỚP HP</th>
+                                    <th class="py-3">TÊN LỚP HP</th>
+                                    <th class="py-3">MÔN HỌC</th>
+                                    <th class="py-3">HỌC KỲ</th>
+                                    <th class="py-3">GIẢNG VIÊN</th>
+                                    <th class="text-end pe-4 py-3">CHẤM ĐIỂM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="lop : ${listLopHP}">
+                                    <td class="ps-4 fw-bold text-dark"
+                                        th:text="${lop.maLopHP}"></td>
+                                    <td class="fw-medium text-primary"
+                                        th:text="${lop.tenLopHP}"></td>
+
+                                    <!-- ✅ Kiểm tra null hocPhan -->
+                                    <td>
+                                        <span class="badge bg-light text-dark border px-2"
+                                              th:text="${lop.hocPhan != null ? lop.hocPhan.tenHocPhan : 'Chưa xác định'}">
+                                        </span>
+                                    </td>
+
+                                    <td th:text="'HK ' + ${lop.hocKy} + ' (' + ${lop.namHoc} + ')'"></td>
+
+                                    <!-- ✅ Kiểm tra null giangVien -->
+                                    <td th:text="${lop.giangVien != null ? lop.giangVien.tenNV : 'Chưa xếp GV'}"></td>
+
+                                    <td class="text-end pe-4">
+                                        <a th:href="@{/admin/diem/lophocphan/{id}(id=${lop.id})}"
+                                           class="btn btn-sm btn-primary fw-bold"
+                                           style="border-radius: 8px;">
+                                            <i class="fa-solid fa-keyboard me-1"></i> Nhập điểm
+                                        </a>
+                                    </td>
+                                </tr>
+
+                                <!-- ✅ Thêm dòng thông báo khi không có dữ liệu -->
+                                <tr th:if="${listLopHP == null or #lists.isEmpty(listLopHP)}">
+                                    <td colspan="6" class="text-center text-muted py-5">
+                                        <i class="fa-solid fa-folder-open d-block fs-2 mb-2 text-secondary"></i>
+                                        Không có lớp học phần nào.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
