@@ -36,7 +36,7 @@ public class ChuongTrinhDaoTaoController {
         model.addAttribute("tongCTDT", list.size());
         model.addAttribute("ctdtDangApDung", ctdtService.countDangApDung());
         model.addAttribute("ctdtNgungApDung", ctdtService.countNgungApDung());
-        return "admin/CTDT";
+        return "/admin/CTDT";
     }
 
     // Form thêm mới

@@ -46,7 +46,7 @@ public class LopHanhChinhController {
         model.addAttribute("lopDangHoc", lopService.countDangHoc());
         model.addAttribute("lopDaTotNghiep", lopService.countDaTotNghiep());
 
-        return "admin/Lop";
+        return "/admin/Lop";
     }
 
     // ===================== CREATE =====================
